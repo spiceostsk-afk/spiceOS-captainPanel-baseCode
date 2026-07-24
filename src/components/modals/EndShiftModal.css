@@ -1,0 +1,303 @@
+/* ---- End Shift Modal Styles ---- */
+
+.end-shift-modal {
+  max-width: 580px;
+  background: rgba(255, 252, 248, 0.95);
+  border: 1px solid rgba(196, 149, 106, 0.2);
+  box-shadow: var(--shadow-xl), 0 20px 25px -5px rgba(196, 149, 106, 0.1);
+}
+
+.end-shift-icon {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+}
+
+.end-shift-intro {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  margin-bottom: var(--space-5);
+}
+
+/* Breakdown by table */
+.shift-breakdown {
+  margin-top: var(--space-5);
+}
+
+.shift-breakdown h4 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.shift-breakdown__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.shift-breakdown__table th {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  background: rgba(196, 149, 106, 0.08);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}
+
+.shift-breakdown__table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+/* Time Summary */
+.shift-time-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(196, 149, 106, 0.05);
+  border: 1px solid rgba(196, 149, 106, 0.15);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.time-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.stat-val {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.time-divider {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-tertiary);
+}
+
+.duration-badge .stat-val {
+  color: var(--color-primary);
+}
+
+/* Metrics Grid */
+.shift-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.metric-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.metric-box:hover {
+  transform: translateY(-2px);
+  border-color: rgba(196, 149, 106, 0.3);
+}
+
+.metric-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.val-revenue {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.val-tables {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.val-orders {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.val-calls {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+}
+
+.metric-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* Success Phase */
+.end-shift-success {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.success-icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.success-checkmark {
+  color: #10b981;
+  animation: scale-up-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scale-up-bounce {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.end-shift-success h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.end-shift-success p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-6);
+}
+
+.final-summary-card {
+  max-width: 320px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.final-summary-card h4 {
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-row span {
+  color: var(--color-text-secondary);
+}
+
+.summary-row strong {
+  color: var(--color-text-primary);
+}
+
+.summary-row .text-revenue {
+  color: #10b981;
+  font-size: var(--font-size-base);
+}
+
+/* Error Alert */
+.end-shift-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: #ef4444;
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.end-shift-confirm-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+}
+
+.end-shift-confirm-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.success-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  width: 100%;
+}
+
+.success-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .shift-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .shift-time-summary {
+    flex-direction: column;
+    gap: var(--space-3);
+    text-align: center;
+  }
+  .time-divider {
+    transform: rotate(90deg);
+  }
+}

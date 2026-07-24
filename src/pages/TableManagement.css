@@ -1,0 +1,14 @@
+.table-management {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - var(--topbar-height) - var(--space-12));
+}
+
+.table-management__main {
+  flex: 1;
+  transition: margin-right var(--transition-slow);
+}
+
+.table-management__main--with-panel {
+  margin-right: 380px;
+}

@@ -1,0 +1,108 @@
+.waitlist-preview {
+  margin-top: var(--space-8);
+}
+
+.waitlist-preview__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.waitlist-preview__cards {
+  display: flex;
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.waitlist-preview__card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  flex: 1;
+  max-width: 320px;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+}
+
+.waitlist-preview__card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.waitlist-preview__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #D4A574, #C4956A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.waitlist-preview__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.waitlist-preview__name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.waitlist-preview__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.waitlist-preview__arrow {
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-fast);
+}
+
+.waitlist-preview__card:hover .waitlist-preview__arrow {
+  color: var(--color-primary);
+}
+
+/* ---- View All ---- */
+.waitlist-preview__view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  flex: 1;
+  max-width: 320px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-card);
+}
+
+.waitlist-preview__view-all:hover {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
+}
+
+.waitlist-preview__view-all svg {
+  width: 18px;
+  height: 18px;
+}

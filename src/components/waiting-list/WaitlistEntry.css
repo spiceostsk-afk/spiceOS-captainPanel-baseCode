@@ -1,0 +1,228 @@
+.waitlist-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-card);
+}
+
+.waitlist-entry:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.waitlist-entry--next {
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-md);
+  background: rgba(139, 94, 60, 0.02);
+}
+
+/* ---- Position Badge ---- */
+.waitlist-entry__position {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.waitlist-entry__position--next {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.waitlist-entry__position--default {
+  background: var(--color-bg-input);
+  color: var(--color-text-secondary);
+}
+
+.waitlist-entry__position-label {
+  font-size: 8px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.waitlist-entry__position-number {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1;
+}
+
+/* ---- Content ---- */
+.waitlist-entry__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.waitlist-entry__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.waitlist-entry__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.waitlist-entry__next-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.waitlist-entry__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
+}
+
+.waitlist-entry__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.waitlist-entry__meta-item svg {
+  width: 13px;
+  height: 13px;
+}
+
+.waitlist-entry__meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-tertiary);
+}
+
+.waitlist-entry__wait--urgent {
+  color: var(--color-occupied);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ---- Suggestion ---- */
+.waitlist-entry__suggestion {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  padding-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.waitlist-entry__suggestion svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ---- Actions ---- */
+.waitlist-entry__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.waitlist-entry__assign-btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.waitlist-entry__assign-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.waitlist-entry__assign-btn--primary {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.waitlist-entry__assign-btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.waitlist-entry__assign-btn--outline {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.waitlist-entry__assign-btn--outline:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary-light);
+}
+
+.waitlist-entry__icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  transition: all var(--transition-fast);
+}
+
+.waitlist-entry__icon-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.waitlist-entry__icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Notes/Remarks ---- */
+.waitlist-entry__notes {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.waitlist-entry__notes svg {
+  width: 13px;
+  height: 13px;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.waitlist-entry__notes-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.waitlist-entry__notes-content {
+  font-style: italic;
+}
+

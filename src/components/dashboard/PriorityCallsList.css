@@ -1,0 +1,183 @@
+.priority-calls {
+  margin-top: var(--space-8);
+}
+
+.priority-calls__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.priority-calls__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.priority-call-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.priority-call-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Red indicator on the left for urgency */
+.priority-call-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--color-occupied);
+}
+
+.priority-call-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-occupied-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-occupied);
+  flex-shrink: 0;
+  animation: bell-swing 2.5s infinite ease-in-out;
+}
+
+@keyframes bell-swing {
+  0%, 100% { transform: rotate(0); }
+  5% { transform: rotate(10deg); }
+  10% { transform: rotate(-10deg); }
+  15% { transform: rotate(10deg); }
+  20% { transform: rotate(-10deg); }
+  25% { transform: rotate(0); }
+}
+
+.priority-call-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priority-call-card__name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.priority-call-card__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.priority-call-card__meta svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.priority-call-card__action {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.priority-call-card__action:hover {
+  background: var(--color-available-bg);
+  color: var(--color-available);
+  border-color: var(--color-available);
+}
+
+.priority-calls__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--color-bg-card);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-base);
+  text-align: center;
+}
+
+/* Clickable Call Cards */
+.priority-call-card--clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.priority-call-card--clickable:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+  transform: translateY(-1px);
+}
+
+/* SOS Call Card Styles */
+.priority-call-card--sos {
+  background: rgba(30, 16, 20, 0.4);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.priority-call-card--sos::before {
+  background: #ef4444 !important;
+}
+
+.priority-call-card__avatar--sos {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+}
+
+.priority-call-sos-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: var(--space-2);
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.05em;
+  animation: flashBadge 1s infinite alternate;
+}
+
+.priority-call-card__lock {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  flex-shrink: 0;
+}

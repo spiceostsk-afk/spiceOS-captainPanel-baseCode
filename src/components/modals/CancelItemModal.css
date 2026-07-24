@@ -1,0 +1,180 @@
+.ci-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 220;
+  animation: ciFadeIn 0.2s ease;
+}
+
+@keyframes ciFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ci-modal {
+  background: linear-gradient(180deg, #FDF8F3 0%, #FFFFFF 100%);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-xl);
+  animation: ciScaleIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+@keyframes ciScaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.ci-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.ci-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ci-modal__header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ci-modal__header-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ci-modal__header-text h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.ci-modal__header-text span {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.ci-modal__close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  transition: all var(--transition-fast);
+}
+
+.ci-modal__close:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.ci-modal__body {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cancel-item-warning {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.cancel-item-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.cancel-item-preset {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.cancel-item-preset--active {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.ci-modal__textarea {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  resize: vertical;
+  min-height: 70px;
+}
+
+.ci-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.ci-modal__btn-cancel {
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+}
+
+.ci-modal__btn-submit {
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  flex: 1;
+}
+
+.ci-modal__btn-submit--danger {
+  background: #dc2626;
+}
+
+.ci-modal__btn-submit--danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.ci-modal__btn-submit:disabled,
+.ci-modal__btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

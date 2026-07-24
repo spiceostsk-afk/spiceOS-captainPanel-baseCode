@@ -1,0 +1,191 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--topbar-height);
+  background: rgba(253, 248, 243, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  z-index: 90;
+}
+
+/* ---- Search ---- */
+.topbar__search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  min-width: 220px;
+  transition: border-color var(--transition-fast);
+}
+
+.topbar__search:focus-within {
+  border-color: var(--color-primary-light);
+}
+
+.topbar__search svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.topbar__search input {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  width: 100%;
+}
+
+.topbar__search input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* ---- Status Badge ---- */
+.topbar__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.topbar__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-available);
+  box-shadow: 0 0 0 3px rgba(46, 158, 90, 0.15);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(46, 158, 90, 0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(46, 158, 90, 0.08); }
+}
+
+/* ---- Offline / Sync pills ---- */
+.topbar__offline-pill,
+.topbar__syncing-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.topbar__offline-pill {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.topbar__syncing-pill {
+  background: rgba(217, 119, 6, 0.1);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+/* ---- Right Actions ---- */
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.topbar__btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.topbar__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.topbar__btn--end-shift {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+}
+
+.topbar__btn--end-shift:hover {
+  background: var(--color-primary-hover);
+  color: var(--color-text-inverse);
+}
+
+.topbar__btn--start-shift {
+  background: #10b981;
+  color: var(--color-text-inverse);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+}
+
+.topbar__btn--start-shift:hover {
+  background: #059669;
+  color: var(--color-text-inverse);
+}
+
+.topbar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #C4956A, #A07850);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.topbar__avatar:hover {
+  transform: scale(1.05);
+}
+
+/* ---- TopBar Responsiveness ---- */
+@media (max-width: 1024px) {
+  .topbar__status {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 var(--space-4);
+  }
+  .topbar__search {
+    min-width: 120px;
+  }
+}

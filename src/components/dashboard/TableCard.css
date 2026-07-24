@@ -1,0 +1,315 @@
+.table-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: relative;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+}
+
+.table-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ---- Status Accent —— */
+.table-card--occupied {
+  border-left: 3px solid var(--color-occupied);
+}
+
+.table-card--available {
+  border-left: 3px solid var(--color-available);
+}
+
+.table-card--reserved {
+  border-left: 3px solid var(--color-reserved);
+}
+
+.table-card--cleaning {
+  border-left: 3px solid var(--color-cleaning);
+}
+
+.table-card--payment {
+  border-left: 3px solid var(--color-payment);
+}
+
+/* ---- Header ---- */
+.table-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-card__id {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.table-card__capacity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.table-card__capacity svg {
+  width: 12px;
+  height: 12px;
+}
+
+.table-card__capacity--full {
+  background: var(--color-occupied-bg);
+  color: var(--color-occupied);
+}
+
+.table-card__capacity--partial {
+  background: var(--color-reserved-bg);
+  color: var(--color-reserved);
+}
+
+.table-card__capacity--empty {
+  background: var(--color-available-bg);
+  color: var(--color-available);
+}
+
+/* ---- Body ---- */
+.table-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.table-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.table-card__field-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-card__field-value {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.table-card__field-value--occupied {
+  color: var(--color-occupied);
+}
+
+.table-card__field-value--available {
+  color: var(--color-available);
+}
+
+.table-card__field-value--reserved {
+  color: var(--color-reserved);
+}
+
+.table-card__field-value--cleaning {
+  color: var(--color-cleaning);
+}
+
+.table-card__field-value--payment {
+  color: var(--color-payment);
+}
+
+/* ---- Footer Icon ---- */
+.table-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+.table-card__footer:has(.table-card__order-btn) {
+  justify-content: space-between;
+}
+
+.table-card__footer-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.table-card__footer-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.table-card__footer-icon--occupied {
+  background: var(--color-occupied-bg);
+  color: var(--color-occupied);
+}
+
+.table-card__footer-icon--available {
+  background: var(--color-available-bg);
+  color: var(--color-available);
+}
+
+.table-card__footer-icon--reserved {
+  background: var(--color-reserved-bg);
+  color: var(--color-reserved);
+}
+
+.table-card__footer-icon--cleaning {
+  background: var(--color-cleaning-bg);
+  color: var(--color-cleaning);
+}
+
+.table-card__footer-icon--payment {
+  background: var(--color-payment-bg);
+  color: var(--color-payment);
+}
+
+/* ---- New Table Card ---- */
+.table-card--new {
+  border: 2px dashed var(--color-border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-3);
+  cursor: pointer;
+  min-height: 140px;
+  color: var(--color-text-tertiary);
+  transition: all var(--transition-base);
+}
+
+.table-card--new:hover {
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.table-card--new svg {
+  width: 28px;
+  height: 28px;
+}
+
+.table-card--new span {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ---- Active Waiter Call Badge ---- */
+.table-card--has-call {
+  box-shadow: 0 0 0 2px var(--color-occupied) !important;
+  animation: border-pulse 2s infinite;
+}
+
+@keyframes border-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--color-occupied);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(217, 75, 75, 0.4);
+  }
+}
+
+.table-card__bell-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-occupied);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.table-card__bell-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.table-card__merge-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+
+.table-card__merge-badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ---- Create Order Table Action Button ---- */
+.table-card__order-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  background: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.table-card__order-btn:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: 0 2px 6px rgba(139, 94, 60, 0.2);
+}
+
+.table-card__order-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.table-card__field-value--subtotal {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
