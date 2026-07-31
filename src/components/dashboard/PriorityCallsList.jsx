@@ -34,7 +34,7 @@ function PriorityCallsList() {
 
   return (
     <section className="priority-calls" id="priority-calls-section">
-      <h2 className="priority-calls__title">Priority Call List</h2>
+      <h2 className="priority-calls__title">Priority calls</h2>
 
       <div className="priority-calls__cards">
         {sortedCalls.length > 0 ? (
@@ -82,7 +82,7 @@ function PriorityCallsList() {
           ))
         ) : (
           <div className="priority-calls__empty">
-            All calls resolved. No pending requests.
+            All calls resolved. Nothing pending.
           </div>
         )}
       </div>

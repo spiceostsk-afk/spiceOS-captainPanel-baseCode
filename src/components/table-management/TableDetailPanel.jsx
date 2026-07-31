@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  X,
-  ArrowRightLeft,
-  Receipt,
-  Unlock,
-  StickyNote,
-  UtensilsCrossed,
-  Combine,
-  Unlink,
-  Printer,
-  Ban,
-  Phone,
-  Loader2,
-  UserCheck,
+  X, ArrowRightLeft, Receipt, Unlock, StickyNote, Combine, Unlink,
+  Printer, Ban, Phone, Loader2, UserCheck, Bell, UserCog,
 } from 'lucide-react';
 import { useRestaurant } from '../../context/useRestaurant';
 import { printKOT, printCancellationKOT } from '../../lib/printKOT';
@@ -21,6 +10,16 @@ import TablePickerModal from '../modals/TablePickerModal';
 import CancelItemModal from '../modals/CancelItemModal';
 import BillModal from '../modals/BillModal';
 import './TableDetailPanel.css';
+
+const STATUS_TONE = {
+  available: { label: 'Free', tone: 'free' },
+  occupied: { label: 'Dining', tone: 'dining' },
+  reserved: { label: 'Reserved', tone: 'bill' },
+  payment: { label: 'Bill ready', tone: 'bill' },
+  cleaning: { label: 'Cleaning', tone: 'cleaning' },
+};
+
+const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
 function TableDetailPanel({ table, onClose }) {
   const [isEditingServer, setIsEditingServer] = useState(false);
@@ -69,13 +68,15 @@ function TableDetailPanel({ table, onClose }) {
   const numGuests = liveTable?.seated || 0;
   const combinedGuestCount = numGuests + mergedSecondaries.reduce((s, t) => s + (t.seated || 0), 0);
 
+  const status = STATUS_TONE[liveTable?.status] || STATUS_TONE.available;
+
   const detail = {
     id: liveTable?.id || 'T-01',
-    statusLabel: liveTable ? `${liveTable.status.toUpperCase()} • ${liveTable.section}` : 'Occupied • High Priority',
+    section: liveTable?.section || '—',
     currentStatus: liveTable ? liveTable.status.charAt(0).toUpperCase() + liveTable.status.slice(1) : 'Preparing',
     customerName: activeGuest || 'Walk-in Guest',
     avatarInitials: getAvatarInitials(activeGuest || 'Walk-in Guest'),
-    people: combinedGuestCount > 0 ? `${combinedGuestCount} ${combinedGuestCount === 1 ? 'Guest' : 'Guests'}` : 'Empty',
+    people: combinedGuestCount > 0 ? `${combinedGuestCount} ${combinedGuestCount === 1 ? 'guest' : 'guests'}` : 'Empty',
     phone: liveTable?.phone || null,
     timeSeated: liveTable?.time && liveTable.time !== '--' ? liveTable.time : 'Just seated',
     server: liveTable?.server || 'Not Assigned',
@@ -83,6 +84,16 @@ function TableDetailPanel({ table, onClose }) {
     subtotal: (liveTable?.orders || []).reduce((sum, item) => sum + item.qty * item.price, 0),
     managerNote: liveTable?.status === 'reserved' ? 'VIP Client Reservation.' : 'Regular customer session.',
   };
+
+  const grandSubtotal = detail.subtotal
+    + mergedSecondaries.reduce((s, t) => s + (t.orders || []).reduce((a, i) => a + i.qty * i.price, 0), 0);
+
+  const metaLine = [
+    `${liveTable?.capacity || 0} seats`,
+    detail.section,
+    liveTable?.status !== 'available' ? detail.timeSeated : null,
+    grandSubtotal > 0 ? inr(grandSubtotal) : null,
+  ].filter(Boolean).join(' · ');
 
   const handleCreateOrderClick = () => {
     navigate(`/menu?tableId=${liveTable.dbId}&sessionId=${liveTable.sessionId || 'session-' + liveTable.id}`);
@@ -208,25 +219,38 @@ function TableDetailPanel({ table, onClose }) {
 
   const availableTables = tables.filter((t) => t.status === 'available' && t.dbId !== liveTable?.dbId);
   const mergeableTables = tables.filter(
-    (t) => t.status === 'occupied' && t.dbId !== liveTable?.dbId && !t.mergedInto
+    (t) => t.status === 'occupied' && t.dbId !== liveTable?.dbId && !t.mergedInto,
   );
+
+  const canMoveOrMerge = liveTable?.status === 'occupied' && !liveTable?.mergedInto;
 
   return (
     <aside className="detail-panel" id="table-detail-panel">
-      {/* Header */}
+      {/* ---- Header ---- */}
       <div className="detail-panel__header">
         <div className="detail-panel__title-group">
           <h2 className="detail-panel__title">Table {detail.id}</h2>
-          <span className="detail-panel__subtitle">{detail.statusLabel}</span>
+          <span className={`detail-panel__badge detail-panel__badge--${status.tone}`}>
+            {status.label}
+          </span>
         </div>
         <button className="detail-panel__close" onClick={onClose} id="btn-close-detail">
-          <X size={18} />
+          <X size={17} />
         </button>
       </div>
+
+      <p className="detail-panel__meta">{metaLine}</p>
 
       {actionError && (
         <div className="detail-panel__error" id="detail-panel-error">
           {actionError}
+        </div>
+      )}
+
+      {liveTable?.hasPendingCall && (
+        <div className="detail-panel__sos">
+          <Bell size={15} />
+          <span>Guest is calling for assistance.</span>
         </div>
       )}
 
@@ -243,22 +267,100 @@ function TableDetailPanel({ table, onClose }) {
       {mergedSecondaries.length > 0 && (
         <div className="detail-panel__merge-banner detail-panel__merge-banner--primary">
           <Combine size={14} />
-          <span>
-            Combined with: {mergedSecondaries.map((t) => t.id).join(', ')}
-          </span>
+          <span>Combined with: {mergedSecondaries.map((t) => t.id).join(', ')}</span>
         </div>
       )}
 
-      {/* Current Status */}
-      <div className="detail-panel__status">
-        <p className="detail-panel__status-label">Current Status</p>
-        <p className="detail-panel__status-value">{detail.currentStatus}</p>
+      {/* ---- Primary actions ---- */}
+      <div className="detail-panel__actions">
+        {liveTable?.status === 'occupied' && (
+          <button
+            className="detail-panel__btn detail-panel__btn--primary"
+            onClick={handleCreateOrderClick}
+            id="btn-create-order"
+          >
+            Add items
+          </button>
+        )}
+
+        <button
+          className="detail-panel__btn detail-panel__btn--outline"
+          id="btn-mark-billing"
+          onClick={() => setShowBillModal(true)}
+          disabled={billing || liveTable?.status === 'payment'}
+        >
+          {billing ? <Loader2 size={15} className="animate-spin" /> : <Receipt size={15} />}
+          {liveTable?.status === 'payment' ? 'Sent to billing' : 'Request bill'}
+        </button>
+
+        <button
+          className="detail-panel__btn detail-panel__btn--outline"
+          id="btn-free-table"
+          onClick={handleFreeTable}
+          disabled={freeing}
+        >
+          {freeing ? <Loader2 size={15} className="animate-spin" /> : <Unlock size={15} />}
+          {freeing ? 'Freeing…' : 'Free table'}
+        </button>
       </div>
 
-      {/* Customer Info */}
+      {/* ---- More actions ---- */}
+      <div className="detail-panel__more">
+        <p className="detail-panel__more-label">More actions</p>
+        <div className="detail-panel__more-grid">
+          <button
+            className="detail-panel__chip"
+            id="btn-move-table"
+            onClick={() => setShowMovePicker(true)}
+            disabled={!canMoveOrMerge}
+          >
+            <ArrowRightLeft size={14} /> Move table
+          </button>
+          <button
+            className="detail-panel__chip"
+            id="btn-merge-table"
+            onClick={() => setShowMergePicker(true)}
+            disabled={!canMoveOrMerge}
+          >
+            <Combine size={14} /> Merge with
+          </button>
+          <button
+            className="detail-panel__chip"
+            id="btn-assign-waiter"
+            onClick={() => setIsEditingServer(true)}
+            disabled={!liveTable?.sessionId}
+          >
+            <UserCog size={14} /> Assign waiter
+          </button>
+        </div>
+
+        {isEditingServer && (
+          <select
+            className="detail-panel__waiter-select"
+            value={liveTable?.server || ''}
+            onChange={async (e) => {
+              const newServer = e.target.value;
+              if (newServer && liveTable.sessionId) {
+                const result = await assignWaiter(liveTable.sessionId, newServer);
+                if (!result.success) {
+                  setActionError("Failed to assign waiter. Make sure the 'server_name' column exists on 'customer_sessions' in Supabase.");
+                }
+              }
+              setIsEditingServer(false);
+            }}
+            onBlur={() => setIsEditingServer(false)}
+            autoFocus
+          >
+            <option value="" disabled>Select waiter…</option>
+            {MOCK_WAITERS.map((w) => <option key={w} value={w}>{w}</option>)}
+          </select>
+        )}
+      </div>
+
+      {/* ---- Guest info ---- */}
       <div className="detail-panel__info">
         <div className="detail-panel__info-item">
-          <span className="detail-panel__info-label">Customer Name</span>
+          <span className="detail-panel__info-label">Guest</span>
           <span className="detail-panel__info-value">
             <span className="detail-panel__info-avatar">{detail.avatarInitials}</span>
             {detail.customerName}
@@ -271,83 +373,36 @@ function TableDetailPanel({ table, onClose }) {
         <div className="detail-panel__info-item">
           <span className="detail-panel__info-label">Phone</span>
           <span className="detail-panel__info-value">
-            {detail.phone ? (
-              <>
-                <Phone size={13} /> {detail.phone}
-              </>
-            ) : (
-              '—'
-            )}
+            {detail.phone ? (<><Phone size={13} /> {detail.phone}</>) : '—'}
           </span>
         </div>
         <div className="detail-panel__info-item">
-          <span className="detail-panel__info-label">Time Seated</span>
+          <span className="detail-panel__info-label">Seated</span>
           <span className="detail-panel__info-value">{detail.timeSeated}</span>
         </div>
-        <div className="detail-panel__info-item" style={{ alignItems: 'flex-start' }}>
+        <div className="detail-panel__info-item">
           <span className="detail-panel__info-label">Server</span>
-          <span className="detail-panel__info-value">
-            {isEditingServer ? (
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <select
-                  value={detail.server || ''}
-                  onChange={async (e) => {
-                    const newServer = e.target.value;
-                    if (newServer && liveTable.sessionId) {
-                      const result = await assignWaiter(liveTable.sessionId, newServer);
-                      if (!result.success) {
-                        setActionError("Failed to assign waiter. Please make sure you have added the 'server_name' column to the 'customer_sessions' table in Supabase.");
-                      }
-                    }
-                    setIsEditingServer(false);
-                  }}
-                  autoFocus
-                  onBlur={() => setIsEditingServer(false)}
-                  style={{
-                    padding: '4px',
-                    borderRadius: '4px',
-                    border: '1px solid #ddd',
-                    background: 'var(--bg-main)',
-                    color: 'var(--text-main)',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="" disabled>Select Waiter</option>
-                  {MOCK_WAITERS.map(w => (
-                    <option key={w} value={w}>{w}</option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              <span
-                style={{ cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted', color: 'var(--brand-primary)' }}
-                onClick={() => setIsEditingServer(true)}
-                title="Click to assign waiter"
-              >
-                {detail.server || 'Not Assigned'}
-              </span>
-            )}
-          </span>
+          <span className="detail-panel__info-value">{detail.server}</span>
         </div>
       </div>
 
-      {/* Active Order — grouped by KOT */}
+      {/* ---- KOT history ---- */}
       <div className="detail-panel__orders">
         <div className="detail-panel__orders-header">
-          <span className="detail-panel__orders-title">KOT History ({detail.kots.length})</span>
+          <span className="detail-panel__orders-title">KOT history ({detail.kots.length})</span>
         </div>
 
         {detail.kots.length === 0 && (
-          <div className="order-item" style={{ justifyContent: 'center', opacity: 0.6 }}>
-            <span>No items ordered yet.</span>
-          </div>
+          <div className="detail-panel__orders-empty">No items ordered yet.</div>
         )}
 
         {detail.kots.map((kot) => (
           <div key={kot.id} className="kot-block" id={`kot-block-${kot.id}`}>
             <div className="kot-block__header">
               <span className="kot-block__title">KOT #{kot.kotNumber}</span>
-              <span className="kot-block__time">{new Date(kot.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              <span className="kot-block__time">
+                {new Date(kot.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
               <button
                 className="kot-block__reprint"
                 onClick={() => handleReprint(kot)}
@@ -357,21 +412,18 @@ function TableDetailPanel({ table, onClose }) {
                 <Printer size={13} /> Reprint
               </button>
             </div>
+
             {kot.items.map((item) => (
               <div key={item.id} className={`order-item ${item.cancelled ? 'order-item--cancelled' : ''}`}>
                 <div className="order-item__info">
-                  <span className="order-item__name">
-                    {item.qty}x {item.name}
-                  </span>
+                  <span className="order-item__name">{item.qty}× {item.name}</span>
                   {item.notes && <span className="order-item__note">{item.notes}</span>}
                   {item.cancelled && (
                     <span className="order-item__cancel-reason">Cancelled: {item.cancelReason}</span>
                   )}
                 </div>
                 <div className="order-item__right">
-                  <span className="order-item__price">
-                    ${(item.price * item.qty).toFixed(2)}
-                  </span>
+                  <span className="order-item__price tnum">{inr(item.price * item.qty)}</span>
                   {!item.cancelled && (
                     <button
                       className="order-item__cancel-btn"
@@ -396,98 +448,32 @@ function TableDetailPanel({ table, onClose }) {
             {(mt.orders || []).map((item, idx) => (
               <div key={idx} className="order-item">
                 <div className="order-item__info">
-                  <span className="order-item__name">{item.qty}x {item.name}</span>
+                  <span className="order-item__name">{item.qty}× {item.name}</span>
                 </div>
-                <span className="order-item__price">${(item.price * item.qty).toFixed(2)}</span>
+                <span className="order-item__price tnum">{inr(item.price * item.qty)}</span>
               </div>
             ))}
             {(mt.orders || []).length === 0 && (
-              <div className="order-item" style={{ opacity: 0.6 }}><span>No items.</span></div>
+              <div className="detail-panel__orders-empty">No items.</div>
             )}
           </div>
         ))}
 
         <div className="detail-panel__subtotal">
           <span className="detail-panel__subtotal-label">Subtotal</span>
-          <span className="detail-panel__subtotal-value">
-            ${(detail.subtotal + mergedSecondaries.reduce((s, t) => s + (t.orders || []).reduce((a, i) => a + i.qty * i.price, 0), 0)).toFixed(2)}
-          </span>
+          <span className="detail-panel__subtotal-value tnum">{inr(grandSubtotal)}</span>
         </div>
       </div>
 
-      {/* Manager Notes */}
-      <div className="detail-panel__notes">
-        <div className="detail-panel__notes-box">
-          <p className="detail-panel__notes-title">
-            <StickyNote />
-            Manager Notes
-          </p>
-          <p className="detail-panel__notes-text">
-            &ldquo;{detail.managerNote}&rdquo;
-          </p>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="detail-panel__actions">
-        {liveTable?.status === 'occupied' && (
-          <button
-            className="detail-panel__btn detail-panel__btn--primary"
-            style={{ backgroundColor: 'var(--color-primary)', color: 'white', marginBottom: 'var(--space-2)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            onClick={handleCreateOrderClick}
-            id="btn-create-order"
-          >
-            <UtensilsCrossed size={16} />
-            Create Order
-          </button>
-        )}
-
-        {liveTable?.status === 'occupied' && !liveTable?.mergedInto && (
-          <div className="detail-panel__actions-row">
-            <button
-              className="detail-panel__btn detail-panel__btn--outline"
-              id="btn-move-table"
-              onClick={() => setShowMovePicker(true)}
-            >
-              <ArrowRightLeft />
-              Move Table
-            </button>
-            <button
-              className="detail-panel__btn detail-panel__btn--outline"
-              id="btn-merge-table"
-              onClick={() => setShowMergePicker(true)}
-            >
-              <Combine />
-              Merge With
-            </button>
-          </div>
-        )}
-
-        <div className="detail-panel__actions-row">
-          <button
-            className="detail-panel__btn detail-panel__btn--primary"
-            id="btn-mark-billing"
-            onClick={() => setShowBillModal(true)}
-            disabled={billing || liveTable?.status === 'payment'}
-          >
-            {billing ? <Loader2 size={16} className="animate-spin" /> : <Receipt />}
-            {liveTable?.status === 'payment' ? 'Sent to Billing' : 'Mark Billing'}
-          </button>
-        </div>
-        <button
-          className="detail-panel__btn detail-panel__btn--secondary"
-          id="btn-free-table"
-          onClick={handleFreeTable}
-          disabled={freeing}
-        >
-          {freeing ? <Loader2 size={16} className="animate-spin" /> : <Unlock />}
-          {freeing ? 'Freeing...' : 'Free Table'}
-        </button>
+      {/* ---- Manager note ---- */}
+      <div className="detail-panel__notes-box">
+        <p className="detail-panel__notes-title"><StickyNote size={13} /> Manager note</p>
+        <p className="detail-panel__notes-text">&ldquo;{detail.managerNote}&rdquo;</p>
       </div>
 
       {showMovePicker && (
         <TablePickerModal
-          title="Move Table"
+          title="Move table"
           subtitle={`Transfer Table ${liveTable.id} to an available table`}
           tables={availableTables}
           emptyMessage="No available tables to move to."
@@ -498,7 +484,7 @@ function TableDetailPanel({ table, onClose }) {
 
       {showMergePicker && (
         <TablePickerModal
-          title="Merge With"
+          title="Merge with"
           subtitle={`Combine Table ${liveTable.id} with another occupied table`}
           tables={mergeableTables}
           emptyMessage="No other occupied, unmerged tables available."
@@ -525,21 +511,32 @@ function TableDetailPanel({ table, onClose }) {
       )}
 
       {freedPrompt && waitingList.length > 0 && (
-        <div className="freed-prompt-overlay" onClick={!assigningNext ? () => { setFreedPrompt(null); onClose(); } : undefined} id="freed-table-prompt-overlay">
+        <div
+          className="freed-prompt-overlay"
+          onClick={!assigningNext ? () => { setFreedPrompt(null); onClose(); } : undefined}
+          id="freed-table-prompt-overlay"
+        >
           <div className="freed-prompt-card" onClick={(e) => e.stopPropagation()} id="freed-table-prompt">
-            <div className="freed-prompt-card__icon">
-              <UserCheck size={22} />
-            </div>
+            <div className="freed-prompt-card__icon"><UserCheck size={22} /></div>
             <h3>Table {freedPrompt.tableLabel} is now free</h3>
             <p>
               Seat next waiting guest <strong>{waitingList[0].name}</strong> (party of {waitingList[0].people}) here?
             </p>
             <div className="freed-prompt-card__actions">
-              <button onClick={() => { setFreedPrompt(null); onClose(); }} disabled={assigningNext} id="btn-freed-prompt-skip">
-                Not Now
+              <button
+                onClick={() => { setFreedPrompt(null); onClose(); }}
+                disabled={assigningNext}
+                id="btn-freed-prompt-skip"
+              >
+                Not now
               </button>
-              <button className="freed-prompt-card__primary" onClick={handleAssignNextWaiting} disabled={assigningNext} id="btn-freed-prompt-assign">
-                {assigningNext ? 'Seating...' : 'Seat Them Here'}
+              <button
+                className="freed-prompt-card__primary"
+                onClick={handleAssignNextWaiting}
+                disabled={assigningNext}
+                id="btn-freed-prompt-assign"
+              >
+                {assigningNext ? 'Seating…' : 'Seat them here'}
               </button>
             </div>
           </div>

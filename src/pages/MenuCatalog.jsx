@@ -4,60 +4,20 @@ import { supabase, isMockMode } from '../lib/supabase';
 import { useRestaurant } from '../context/useRestaurant';
 import { printKOT } from '../lib/printKOT';
 import { isNetworkError } from '../lib/networkError';
-import { 
-  Utensils, 
-  Coffee, 
-  Soup, 
-  Pizza, 
-  IceCream, 
-  Salad, 
-  Clock, 
-  Plus, 
-  Trash2,
-  ChevronRight,
-  Beef,
-  Croissant,
-  Wine,
-  Sandwich,
-  ArrowLeft
-} from 'lucide-react';
+import { Plus, Minus, Trash2, ChevronRight, ArrowLeft, Search, Users } from 'lucide-react';
 import './MenuCatalog.css';
 
-// Map category names to icons
-const CATEGORY_ICONS = {
-  'Beverages': Coffee,
-  'Drinks': Coffee,
-  'Desserts': IceCream,
-  'Sweets': IceCream,
-  'Main Course': Beef,
-  'Mains': Beef,
-  'Pizza & Pasta': Pizza,
-  'Pizza': Pizza,
-  'Pasta': Pizza,
-  'Soups': Soup,
-  'Starters': Salad,
-  'Appetizers': Salad,
-  'Snacks': Sandwich,
-  'Bakery': Croissant,
-  'Cocktails': Wine,
-};
-
-const getCategoryIcon = (name) => {
-  if (!name) return Utensils;
-  const match = Object.keys(CATEGORY_ICONS).find(k => name.toLowerCase().includes(k.toLowerCase()));
-  return match ? CATEGORY_ICONS[match] : Utensils;
-};
-
-// Fallback gradient placeholder as data URI
-const FOOD_PLACEHOLDER = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect width='400' height='200' fill='%23F9EBE0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='48' opacity='0.35'%3E%F0%9F%8D%BD%EF%B8%8F%3C/text%3E%3C/svg%3E`;
-
 const MENU_CACHE_KEY = 'cached_menu_data';
+
+const TAX_RATE = 0.1;
+
+const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
 const MOCK_CATEGORIES = [
   { id: 'cat-1', category_name: 'Starters' },
   { id: 'cat-2', category_name: 'Main Course' },
   { id: 'cat-3', category_name: 'Desserts' },
-  { id: 'cat-4', category_name: 'Beverages' }
+  { id: 'cat-4', category_name: 'Beverages' },
 ];
 
 const MOCK_MENU_ITEMS = [
@@ -72,7 +32,7 @@ const MOCK_MENU_ITEMS = [
   { id: 'item-9', category_id: 'cat-3', item_name: 'Chocolate Souffle', price: 12.00, description: 'Warm chocolate souffle with a molten center, served with vanilla gelato.', is_available: true },
   { id: 'item-10', category_id: 'cat-4', item_name: 'House Lemonade', price: 6.00, description: 'Freshly squeezed lemon juice, mint leaves, dash of simple syrup.', is_available: true },
   { id: 'item-11', category_id: 'cat-4', item_name: 'Espresso', price: 4.00, description: 'Rich and intense double shot of house blend espresso.', is_available: true },
-  { id: 'item-12', category_id: 'cat-4', item_name: 'Red Wine Glass', price: 14.00, description: 'Premium cabernet sauvignon with notes of dark berries.', is_available: true }
+  { id: 'item-12', category_id: 'cat-4', item_name: 'Red Wine Glass', price: 14.00, description: 'Premium cabernet sauvignon with notes of dark berries.', is_available: true },
 ];
 
 const MenuCatalog = () => {
@@ -85,6 +45,7 @@ const MenuCatalog = () => {
 
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [dishSearch, setDishSearch] = useState('');
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
@@ -97,8 +58,7 @@ const MenuCatalog = () => {
   // synchronously, so the second call always sees the first call's guard.
   const submittingRef = useRef(false);
 
-  // Find table info
-  const selectedTable = tables.find(t => t.dbId === tableId || t.id === tableId);
+  const selectedTable = tables.find((t) => t.dbId === tableId || t.id === tableId);
 
   useEffect(() => {
     fetchMenuData();
@@ -158,22 +118,22 @@ const MenuCatalog = () => {
   };
 
   const addToOrder = (item) => {
-    const existing = orderItems.find(i => i.id === item.id);
+    const existing = orderItems.find((i) => i.id === item.id);
     if (existing) {
-      setOrderItems(orderItems.map(i => i.id === item.id ? { ...i, qty: i.qty + 1 } : i));
+      setOrderItems(orderItems.map((i) => (i.id === item.id ? { ...i, qty: i.qty + 1 } : i)));
     } else {
-      setOrderItems([...orderItems, { 
-        id: item.id, 
-        name: item.item_name, 
-        price: item.price, 
-        notes: '', 
-        qty: 1 
+      setOrderItems([...orderItems, {
+        id: item.id,
+        name: item.item_name,
+        price: item.price,
+        notes: '',
+        qty: 1,
       }]);
     }
   };
 
   const updateQty = (id, delta) => {
-    setOrderItems(orderItems.map(i => {
+    setOrderItems(orderItems.map((i) => {
       if (i.id === id) {
         const newQty = Math.max(0, i.qty + delta);
         return newQty === 0 ? null : { ...i, qty: newQty };
@@ -183,7 +143,7 @@ const MenuCatalog = () => {
   };
 
   const updateNote = (id, notes) => {
-    setOrderItems(orderItems.map(i => (i.id === id ? { ...i, notes } : i)));
+    setOrderItems(orderItems.map((i) => (i.id === id ? { ...i, notes } : i)));
   };
 
   const clearOrder = () => {
@@ -198,7 +158,7 @@ const MenuCatalog = () => {
 
     const targetTableId = tableId || (tables.length > 0 ? tables[0].dbId : null);
     if (!targetTableId) {
-      alert("No table selected. Please choose a table from the Dashboard first.");
+      alert('No table selected. Please choose a table from the floor first.');
       submittingRef.current = false;
       return;
     }
@@ -213,7 +173,6 @@ const MenuCatalog = () => {
           .map((i) => i.notes)
           .filter((n) => n && n.trim().length > 0)
           .join('; ');
-        // Auto-print KOT immediately after a successful order
         const printed = printKOT({
           tableId: selectedTable?.id || tableId,
           sessionId: sessionId || (selectedTable?.sessionId),
@@ -240,171 +199,212 @@ const MenuCatalog = () => {
     }
   };
 
-  const subtotal = orderItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const tax = subtotal * 0.1;
+  const subtotal = orderItems.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const tax = subtotal * TAX_RATE;
   const total = subtotal + tax;
+  const cartCount = orderItems.reduce((acc, i) => acc + i.qty, 0);
 
-  const filteredItems = menuItems.filter(item => {
-    return item.category_id === activeCategory;
+  const q = dishSearch.trim().toLowerCase();
+  const filteredItems = menuItems.filter((item) => {
+    if (item.category_id !== activeCategory) return false;
+    if (!q) return true;
+    return (item.item_name || '').toLowerCase().includes(q);
   });
 
-  if (loading && categories.length === 0) return <div className="loading-state">Loading menu...</div>;
+  const qtyOf = (id) => orderItems.find((i) => i.id === id)?.qty || 0;
+
+  if (loading && categories.length === 0) {
+    return <div className="loading-container">Loading menu…</div>;
+  }
 
   return (
-    <div className="menu-view-container" id="menu-selection-page">
-      {/* Header */}
-      <div className="menu-view__header">
-        <button className="menu-view__back-btn" onClick={() => navigate('/')} id="btn-back-dashboard">
-          <ArrowLeft size={20} />
+    <div className="take-order" id="menu-selection-page">
+      {/* ---- Header ---- */}
+      <div className="take-order__header">
+        <button className="take-order__back" onClick={() => navigate('/')} id="btn-back-dashboard">
+          <ArrowLeft size={18} />
         </button>
-        <div className="menu-view__title-group">
-          <h1>Menu Selection</h1>
-          <p>
-            {selectedTable ? `Ordering for Table ${selectedTable.id} (${selectedTable.guest || 'Walk-in'})` : 'Select a table to start ordering'}
-          </p>
+        <div className="take-order__title">
+          {selectedTable ? `Table ${selectedTable.id} · Order` : 'Menu selection'}
         </div>
-        {usingCachedMenu && (
-          <div className="menu-view__offline-banner" id="menu-offline-banner">
-            Offline — showing menu from last sync. Item availability may be out of date.
-          </div>
+        {selectedTable && (
+          <span className="take-order__guest">
+            <Users size={14} />
+            {selectedTable.guest || 'Walk-in'} · {selectedTable.seated || 0} guests
+          </span>
         )}
       </div>
 
-      <div className="menu-view">
-        {/* Categories */}
-        <div className="category-sidebar" id="category-sidebar">
-          {categories.map((cat) => {
-            const IconComponent = getCategoryIcon(cat.category_name);
-            return (
-              <div 
-                key={cat.id} 
-                className={`category-item ${activeCategory === cat.id ? 'category-item--active' : ''}`}
+      {usingCachedMenu && (
+        <div className="take-order__offline" id="menu-offline-banner">
+          Offline — showing the menu from your last sync. Item availability may be out of date.
+        </div>
+      )}
+
+      <div className="take-order__body">
+        {/* ---- Dish picker ---- */}
+        <div className="take-order__picker">
+          <div className="take-order__cats" id="category-sidebar">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`take-order__cat ${activeCategory === cat.id ? 'is-active' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
                 id={`cat-item-${cat.id}`}
               >
-                <div className="cat-icon-box">
-                  <IconComponent size={22} />
-                </div>
-                <span>{cat.category_name}</span>
-              </div>
-            );
-          })}
-        </div>
+                {cat.category_name}
+              </button>
+            ))}
+          </div>
 
-        {/* Catalog Items */}
-        <div className="catalog-area">
-          <div className="catalog-header">
-            <h2 className="section-title">Dishes & Drinks</h2>
-            <div className="catalog-filters">
-              {['All', 'Vegetarian', 'Spicy'].map(filter => (
-                <button 
-                  key={filter} 
-                  className={`filter-btn ${activeFilter === filter ? 'filter-btn--active' : ''}`}
+          <div className="take-order__filters">
+            <div className="take-order__segmented">
+              {['All', 'Vegetarian', 'Spicy'].map((filter) => (
+                <button
+                  key={filter}
+                  className={activeFilter === filter ? 'is-active' : ''}
                   onClick={() => setActiveFilter(filter)}
                 >
                   {filter}
                 </button>
               ))}
             </div>
+            <div className="take-order__search">
+              <Search size={15} />
+              <input
+                type="text"
+                placeholder="Search dishes…"
+                value={dishSearch}
+                onChange={(e) => setDishSearch(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div className="menu-grid" id="menu-items-grid">
-            {filteredItems.map((item) => (
-              <div key={item.id} className="food-card" id={`food-card-${item.id}`}>
-                <div className="food-image-container">
-                  <img 
-                    src={FOOD_PLACEHOLDER} 
-                    alt={item.item_name}
-                  />
-                  <div className="price-badge">${Number(item.price).toFixed(2)}</div>
-                </div>
-                <div className="food-info">
-                  <h3>{item.item_name}</h3>
-                  <p className="food-desc">{item.description || 'Freshly prepared with care.'}</p>
-                  <div className="food-footer">
-                    <div className="prep-time">
-                      <Clock size={14} />
-                      <span>15 mins</span>
-                    </div>
-                    <button className="add-btn" onClick={() => addToOrder(item)} id={`btn-add-food-${item.id}`}>
-                      <Plus size={18} />
-                    </button>
+          <div className="take-order__grid" id="menu-items-grid">
+            {filteredItems.map((item) => {
+              const qty = qtyOf(item.id);
+              return (
+                <div
+                  key={item.id}
+                  className={`dish ${qty > 0 ? 'dish--in-cart' : ''}`}
+                  id={`food-card-${item.id}`}
+                  onClick={() => addToOrder(item)}
+                >
+                  <div className="dish__name">{item.item_name}</div>
+                  {item.description && <div className="dish__desc">{item.description}</div>}
+
+                  <div className="dish__foot">
+                    <span className="dish__price tnum">{inr(item.price)}</span>
+
+                    {qty > 0 ? (
+                      <div className="dish__stepper" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => updateQty(item.id, -1)} id={`btn-dec-dish-${item.id}`}>
+                          <Minus size={13} />
+                        </button>
+                        <span className="tnum">{qty}</span>
+                        <button
+                          className="is-primary"
+                          onClick={() => addToOrder(item)}
+                          id={`btn-inc-dish-${item.id}`}
+                        >
+                          <Plus size={13} />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="dish__add" id={`btn-add-food-${item.id}`}>
+                        <Plus size={16} />
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
             {filteredItems.length === 0 && (
-              <div className="empty-order-msg">No items in this category.</div>
+              <div className="take-order__empty">
+                {q ? `No dish matches “${dishSearch.trim()}”.` : 'No items in this category.'}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Order Basket */}
-        <div className="order-panel" id="order-basket-panel">
-          <div className="order-header">
+        {/* ---- Cart ---- */}
+        <div className="take-order__cart" id="order-basket-panel">
+          <div className="cart__head">
             <div>
-              <h3>Current Order</h3>
-              <p>Items added: {orderItems.reduce((acc, i) => acc + i.qty, 0)}</p>
+              <div className="cart__title">Current order</div>
+              <div className="cart__sub">{cartCount} item{cartCount === 1 ? '' : 's'}</div>
             </div>
-            <button className="clear-btn" onClick={clearOrder} id="btn-clear-basket">Clear All</button>
+            <button className="cart__clear" onClick={clearOrder} id="btn-clear-basket">
+              Clear all
+            </button>
           </div>
 
-          <div className="order-items">
-            {orderItems.map((item, i) => (
-              <div key={i} className="order-item" id={`basket-item-${item.id}`}>
-                <div className="item-main">
-                  <div className="item-details">
-                    <h4>{item.name}</h4>
-                  </div>
-                  <div className="item-price">${(item.price * item.qty).toFixed(2)}</div>
+          <div className="cart__items">
+            {orderItems.map((item) => (
+              <div key={item.id} className="cart__row" id={`basket-item-${item.id}`}>
+                <div className="cart__row-top">
+                  <span className="cart__row-name">{item.name}</span>
+                  <span className="cart__row-price tnum">{inr(item.price * item.qty)}</span>
                 </div>
+
                 <input
                   type="text"
-                  className="item-note-input"
-                  placeholder="Special instruction (e.g. no onions)..."
+                  className="cart__note"
+                  placeholder="Special instruction (e.g. no onions)…"
                   value={item.notes}
                   onChange={(e) => updateNote(item.id, e.target.value)}
                   id={`input-note-${item.id}`}
                 />
-                <div className="item-controls">
-                  <div className="qty-picker">
-                    <button onClick={() => updateQty(item.id, -1)} id={`btn-dec-qty-${item.id}`}>-</button>
-                    <span>{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, 1)} id={`btn-inc-qty-${item.id}`}>+</button>
+
+                <div className="cart__row-controls">
+                  <div className="cart__stepper">
+                    <button onClick={() => updateQty(item.id, -1)} id={`btn-dec-qty-${item.id}`}>
+                      <Minus size={13} />
+                    </button>
+                    <span className="tnum">{item.qty}</span>
+                    <button onClick={() => updateQty(item.id, 1)} id={`btn-inc-qty-${item.id}`}>
+                      <Plus size={13} />
+                    </button>
                   </div>
-                  <button className="delete-item" onClick={() => updateQty(item.id, -item.qty)} id={`btn-delete-item-${item.id}`} title="Remove Item">
-                    <Trash2 size={16} />
+                  <button
+                    className="cart__delete"
+                    onClick={() => updateQty(item.id, -item.qty)}
+                    id={`btn-delete-item-${item.id}`}
+                    title="Remove item"
+                  >
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
             ))}
+
             {orderItems.length === 0 && (
-              <div className="empty-order-msg">Your order is empty.</div>
+              <div className="take-order__empty">Your order is empty.</div>
             )}
           </div>
 
-          <div className="order-summary">
-            <div className="summary-row">
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+          <div className="cart__summary">
+            <div className="cart__sum-row"><span>Subtotal</span><b className="tnum">{inr(subtotal)}</b></div>
+            <div className="cart__sum-row"><span>Tax (10%)</span><b className="tnum">{inr(tax)}</b></div>
+            <div className="cart__sum-row cart__sum-row--total">
+              <span>Total</span><span className="tnum">{inr(total)}</span>
             </div>
-            <div className="summary-row">
-              <span>Tax (10%)</span>
-              <span>${tax.toFixed(2)}</span>
+
+            <div className="cart__actions">
+              <button className="cart__back" onClick={() => navigate('/')}>
+                Back to floor
+              </button>
+              <button
+                className="cart__send"
+                onClick={handlePlaceOrder}
+                disabled={orderItems.length === 0 || isSubmitting}
+                id="btn-place-order"
+              >
+                {isSubmitting ? 'Sending…' : 'Send to kitchen (KOT)'}
+                <ChevronRight size={17} />
+              </button>
             </div>
-            <div className="summary-total">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-            <button
-              className="create-order-btn"
-              onClick={handlePlaceOrder}
-              disabled={orderItems.length === 0 || isSubmitting}
-              id="btn-place-order"
-              style={{ opacity: (orderItems.length === 0 || isSubmitting) ? 0.5 : 1, cursor: (orderItems.length === 0 || isSubmitting) ? 'not-allowed' : 'pointer' }}
-            >
-              {isSubmitting ? 'Placing Order...' : 'Place Order'} <ChevronRight size={18} />
-            </button>
           </div>
         </div>
       </div>

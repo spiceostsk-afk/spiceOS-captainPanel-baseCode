@@ -1,4 +1,5 @@
 import { X, ArrowRightLeft } from 'lucide-react';
+import './modal-shell.css';
 import './TablePickerModal.css';
 
 function TablePickerModal({ title, subtitle, tables, emptyMessage, onSelect, onClose }) {

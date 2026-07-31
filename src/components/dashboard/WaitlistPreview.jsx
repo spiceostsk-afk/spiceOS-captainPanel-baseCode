@@ -27,7 +27,7 @@ function WaitlistPreview({ onAssign }) {
 
   return (
     <section className="waitlist-preview" id="upcoming-waitlist">
-      <h2 className="waitlist-preview__title">Upcoming Waitlist</h2>
+      <h2 className="waitlist-preview__title">Upcoming waitlist</h2>
 
       <div className="waitlist-preview__cards">
         {waitingList && waitingList.length > 0 ? (
@@ -58,7 +58,7 @@ function WaitlistPreview({ onAssign }) {
           id="btn-view-all-waiting"
         >
           <Eye size={18} />
-          View All {stats?.waiting || 0} Waiting
+          View all {stats?.waiting || 0} waiting
         </button>
       </div>
     </section>

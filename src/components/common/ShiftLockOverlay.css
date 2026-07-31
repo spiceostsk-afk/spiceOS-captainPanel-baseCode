@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(253, 248, 243, 0.65);
+  background: rgba(246, 247, 249, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -19,7 +19,7 @@
 .shift-lock-card {
   max-width: 440px;
   width: 90%;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-surface);
   border: 1px solid rgba(196, 149, 106, 0.25);
   border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-6);
@@ -34,7 +34,7 @@
   width: 64px;
   height: 64px;
   border-radius: var(--radius-full);
-  background: rgba(196, 149, 106, 0.12);
+  background: var(--color-well);
   color: var(--color-primary);
   display: flex;
   align-items: center;
@@ -62,7 +62,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--color-success);
   color: white;
   border: none;
   font-weight: var(--font-weight-semibold);
@@ -76,7 +76,7 @@
 }
 
 .start-shift-btn:hover {
-  background: linear-gradient(135deg, #059669, #047857);
+  filter: brightness(0.94);
   transform: translateY(-1px);
   box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.25);
 }

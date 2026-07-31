@@ -82,8 +82,8 @@ function Reports() {
       {/* Header */}
       <div className="reports-header">
         <div>
-          <h1 className="page-title">Shift Reports & History</h1>
-          <p className="page-subtitle">View and audit finalized shift logs and revenue reports</p>
+          <h1 className="page-title">Shift reports</h1>
+          <p className="page-subtitle">Audit finalised shift logs and revenue.</p>
         </div>
         <div className="reports-header__actions">
           <button
@@ -104,7 +104,7 @@ function Reports() {
             id="btn-reports-refresh"
           >
             <RefreshCw className={isRefreshing ? 'animate-spin' : ''} size={16} />
-            <span>Sync History</span>
+            <span>Sync</span>
           </button>
         </div>
       </div>
@@ -112,28 +112,28 @@ function Reports() {
       {/* Cumulative Stats Grid */}
       <div className="reports-stats-grid">
         <StatCard 
-          label="Shifts Audited" 
+          label="Shifts audited" 
           value={totalShifts} 
           icon={FileText} 
           variant="total" 
           id="stat-shifts-count"
         />
         <StatCard 
-          label="Cumulative Revenue" 
-          value={`$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
+          label="Cumulative revenue" 
+          value={`₹${totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} 
           icon={DollarSign} 
           variant="available" 
           id="stat-cumulative-revenue"
         />
         <StatCard 
-          label="Total Tables Seated" 
+          label="Tables seated" 
           value={totalTables} 
           icon={ClipboardList} 
           variant="occupied" 
           id="stat-total-tables"
         />
         <StatCard 
-          label="Total Orders Processed" 
+          label="Orders processed" 
           value={totalOrders} 
           icon={Utensils} 
           variant="waiting" 
@@ -144,36 +144,36 @@ function Reports() {
       {/* Table Section */}
       <div className="reports-table-container">
         <div className="reports-table-header">
-          <h3>Shift History Logs</h3>
+          <h3>Shift history</h3>
           <span className="reports-badge">{totalShifts} {totalShifts === 1 ? 'Report' : 'Reports'}</span>
         </div>
 
         {loading && shiftReports.length === 0 ? (
           <div className="reports-loading">
             <RefreshCw className="animate-spin text-primary" size={32} />
-            <p>Loading historical records...</p>
+            <p>Loading historical records…</p>
           </div>
         ) : shiftReports.length === 0 ? (
           <div className="reports-empty-state">
             <div className="empty-icon-container">
               <FileText size={48} />
             </div>
-            <h4>No Shift Reports Found</h4>
-            <p>Once you end an active shift and submit the stats, the generated report log will appear here.</p>
+            <h4>No shift reports yet</h4>
+            <p>End a shift and submit the stats — the report log shows up here.</p>
           </div>
         ) : (
           <div className="table-responsive">
             <table className="reports-table">
               <thead>
                 <tr>
-                  <th>Shift Date</th>
-                  <th>Shift Time range</th>
+                  <th>Date</th>
+                  <th>Time range</th>
                   <th>Captain</th>
                   <th>Duration</th>
                   <th>Tables</th>
                   <th>Orders</th>
                   <th>Calls</th>
-                  <th>Total Revenue</th>
+                  <th>Revenue</th>
                 </tr>
               </thead>
               <tbody>
@@ -200,7 +200,7 @@ function Reports() {
                     <td>{report.total_orders}</td>
                     <td>{report.total_waiter_calls}</td>
                     <td className="font-bold text-revenue">
-                      ${parseFloat(report.total_revenue || 0).toFixed(2)}
+                      ₹{parseFloat(report.total_revenue || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </td>
                   </tr>
                 ))}

@@ -1,135 +1,97 @@
-import {
-  UtensilsCrossed,
-  CheckCircle2,
-  CalendarClock,
-  SprayCan,
-  CreditCard,
-  Users,
-  PlusCircle,
-  MessageCircle,
-  Bell,
-  Combine,
-} from 'lucide-react';
+import { Users, Clock, Plus, Combine, Bell } from 'lucide-react';
 import { useRestaurant } from '../../context/useRestaurant';
 import './TableCard.css';
 
-const statusConfig = {
-  occupied: {
-    label: 'Occupied',
-    icon: UtensilsCrossed,
-    timeLabel: 'TIME',
-  },
-  available: {
-    label: 'Available',
-    icon: CheckCircle2,
-    timeLabel: 'TIME',
-  },
-  reserved: {
-    label: 'Reserved',
-    icon: CalendarClock,
-    timeLabel: 'GUEST',
-  },
-  cleaning: {
-    label: 'Cleaning',
-    icon: SprayCan,
-    timeLabel: 'WAIT',
-  },
-  payment: {
-    label: 'Payment Pending',
-    icon: MessageCircle,
-    timeLabel: 'SESSION',
-  },
+/** Strip colour + badge tone per table status. Green free, blue dining, amber bill, red SOS. */
+const STATUS = {
+  available: { label: 'Free', tone: 'free' },
+  occupied: { label: 'Dining', tone: 'dining' },
+  reserved: { label: 'Reserved', tone: 'bill' },
+  payment: { label: 'Bill ready', tone: 'bill' },
+  cleaning: { label: 'Cleaning', tone: 'cleaning' },
 };
 
-function getCapacityVariant(seated, capacity) {
-  if (seated === 0) return 'empty';
-  if (seated >= capacity) return 'full';
-  return 'partial';
+const OVERDUE_MINUTES = 45;
+
+/** "42 mins" / "1h 20m" / "--" → minutes, or null when unknown. */
+function parseMinutes(time) {
+  if (!time || time === '--') return null;
+  const hm = /(\d+)\s*h\s*(\d+)\s*m/.exec(time);
+  if (hm) return Number(hm[1]) * 60 + Number(hm[2]);
+  const m = /(\d+)/.exec(time);
+  return m ? Number(m[1]) : null;
 }
+
+const inr = (n) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
 function TableCard({ table, onClick, onClickOrder }) {
   const { tables = [] } = useRestaurant();
-  const config = statusConfig[table?.status] || statusConfig.available;
-  const StatusIcon = config.icon;
+
+  const config = STATUS[table?.status] || STATUS.available;
   const seated = table?.seated || 0;
   const capacity = table?.capacity || 1;
-  const capacityVariant = getCapacityVariant(seated, capacity);
+  const occupied = table?.status !== 'available';
 
   const subtotal = (table?.orders || []).reduce((sum, item) => sum + item.qty * item.price, 0);
   const mergedIntoTable = table?.mergedInto ? tables.find((t) => t.dbId === table.mergedInto) : null;
   const combinedCount = table?.mergedTableIds?.length || 0;
 
-  const getSecondaryValue = () => {
-    if (table.status === 'reserved') return table.guest;
-    if (table.status === 'cleaning') return table.time;
-    if (table.status === 'payment') return table.time;
-    return table.time;
-  };
+  const minutes = parseMinutes(table?.time);
+  const late = table?.hasPendingCall
+    || table?.status === 'payment'
+    || (minutes !== null && minutes > OVERDUE_MINUTES);
 
-  const getStatusDisplay = () => {
-    if (table.status === 'reserved') {
-      return `Reserved (${table.time})`;
-    }
-    return config.label;
-  };
+  const sos = !!table?.hasPendingCall;
 
   return (
     <div
-      className={`table-card table-card--${table.status} ${table.hasPendingCall ? 'table-card--has-call' : ''}`}
+      className={`table-card table-card--${config.tone} ${sos ? 'table-card--sos' : ''}`}
       onClick={() => onClick && onClick(table)}
       id={`table-card-${table.id}`}
     >
-      {/* Pulsing Bell Badge if there is a pending waiter call */}
-      {table.hasPendingCall && (
-        <div className="table-card__bell-badge" title="Active Waiter Call!">
-          <Bell size={12} className="animate-pulse" />
-        </div>
-      )}
+      <div className="table-card__strip" />
 
-      {(mergedIntoTable || combinedCount > 0) && (
-        <div className="table-card__merge-badge" title={mergedIntoTable ? `Merged into ${mergedIntoTable.id}` : 'Combined with another table'}>
-          <Combine size={11} />
-          {mergedIntoTable ? `→ ${mergedIntoTable.id}` : `+${combinedCount}`}
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="table-card__header">
-        <span className="table-card__id">{table.id}</span>
-        <div className={`table-card__capacity table-card__capacity--${capacityVariant}`}>
-          <Users />
-          {table.seated}/{table.capacity}
-        </div>
-      </div>
-
-      {/* Body */}
       <div className="table-card__body">
-        <div className="table-card__field">
-          <span className="table-card__field-label">STATUS</span>
-          <span className={`table-card__field-value table-card__field-value--${table.status}`}>
-            {getStatusDisplay()}
+        <div className="table-card__top">
+          <span className="table-card__id">{table.id}</span>
+          <span className="table-card__seats">
+            <Users size={13} />
+            {seated}/{capacity}
           </span>
         </div>
 
-        <div className="table-card__field">
-          <span className="table-card__field-label">{config.timeLabel}</span>
-          <span className="table-card__field-value">
-            {getSecondaryValue()}
+        <div className="table-card__badges">
+          <span className={`table-card__badge table-card__badge--${config.tone}`}>
+            {config.label}
           </span>
-        </div>
 
-        {subtotal > 0 && (
-          <div className="table-card__field">
-            <span className="table-card__field-label">SUBTOTAL</span>
-            <span className="table-card__field-value table-card__field-value--subtotal">
-              ${subtotal.toFixed(2)}
+          {sos && (
+            <span className="table-card__badge table-card__badge--sos" title="Guest is calling">
+              <Bell size={11} /> Needs help
             </span>
+          )}
+
+          {(mergedIntoTable || combinedCount > 0) && (
+            <span
+              className="table-card__badge table-card__badge--merge"
+              title={mergedIntoTable ? `Merged into ${mergedIntoTable.id}` : 'Combined with another table'}
+            >
+              <Combine size={11} />
+              {mergedIntoTable ? `→ ${mergedIntoTable.id}` : `+${combinedCount}`}
+            </span>
+          )}
+        </div>
+
+        {occupied && (
+          <div className="table-card__meta">
+            <span className={`table-card__time ${late ? 'is-late' : ''}`}>
+              <Clock size={13} />
+              {table.time}
+            </span>
+            {subtotal > 0 && <span className="table-card__total tnum">{inr(subtotal)}</span>}
           </div>
         )}
-      </div>
 
-      {/* Footer */}
-      <div className="table-card__footer">
         {table.status === 'occupied' && (
           <button
             className="table-card__order-btn"
@@ -139,13 +101,9 @@ function TableCard({ table, onClick, onClickOrder }) {
             }}
             id={`btn-table-order-${table.id}`}
           >
-            <UtensilsCrossed size={12} />
-            Create Order
+            Add items
           </button>
         )}
-        <div className={`table-card__footer-icon table-card__footer-icon--${table.status}`}>
-          <StatusIcon />
-        </div>
       </div>
     </div>
   );
@@ -154,8 +112,8 @@ function TableCard({ table, onClick, onClickOrder }) {
 function NewTableCard({ onClick }) {
   return (
     <div className="table-card table-card--new" onClick={onClick} id="btn-new-table">
-      <PlusCircle />
-      <span>New Table</span>
+      <span className="table-card__new-mark"><Plus size={20} /></span>
+      <span>New table</span>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Calendar, DollarSign, ClipboardList, Utensils, Bell, Loader, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useRestaurant } from '../../context/useRestaurant';
+import './modal-shell.css';
 import './EndShiftModal.css';
 
 function EndShiftModal({ reportData, onClose }) {
@@ -57,7 +58,7 @@ function EndShiftModal({ reportData, onClose }) {
               <Calendar />
             </div>
             <div className="modal__header-text">
-              <h2>End Shift Report</h2>
+              <h2>End shift</h2>
               <span>Captain: {reportData.captain_name}</span>
             </div>
           </div>
@@ -75,21 +76,21 @@ function EndShiftModal({ reportData, onClose }) {
               <div className="success-icon-container">
                 <CheckCircle2 size={64} className="success-checkmark" />
               </div>
-              <h3>Shift Ended Successfully!</h3>
-              <p>The report has been saved and is reflected in the Admin Panel.</p>
+              <h3>Shift report submitted</h3>
+              <p>The report is saved and now visible in the manager dashboard.</p>
               
               <div className="final-summary-card">
-                <h4>Shift Summary</h4>
+                <h4>Shift summary</h4>
                 <div className="summary-row">
-                  <span>Duration:</span>
+                  <span>Duration</span>
                   <strong>{duration}</strong>
                 </div>
                 <div className="summary-row">
-                  <span>Total Revenue:</span>
-                  <strong className="text-revenue">${reportData.total_revenue.toFixed(2)}</strong>
+                  <span>Collected</span>
+                  <strong className="text-revenue">₹{reportData.total_revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</strong>
                 </div>
                 <div className="summary-row">
-                  <span>Tables Served:</span>
+                  <span>Tables served</span>
                   <strong>{reportData.total_tables_served}</strong>
                 </div>
               </div>
@@ -97,7 +98,7 @@ function EndShiftModal({ reportData, onClose }) {
           ) : (
             <div className="end-shift-preview">
               <p className="end-shift-intro">
-                Review your shift report summary below. Ending the shift will finalize these metrics and reset the dashboard timer for the next shift.
+                Review the summary below. Ending the shift finalises these numbers and resets the timer for the next one.
               </p>
 
               {error && (
@@ -110,12 +111,12 @@ function EndShiftModal({ reportData, onClose }) {
               {/* Time stats */}
               <div className="shift-time-summary">
                 <div className="time-stat">
-                  <span className="stat-label">Shift Start</span>
+                  <span className="stat-label">Start</span>
                   <span className="stat-val">{formatTime(reportData.shift_start)}</span>
                 </div>
                 <div className="time-divider">➜</div>
                 <div className="time-stat">
-                  <span className="stat-label">Shift End</span>
+                  <span className="stat-label">End</span>
                   <span className="stat-val">{formatTime(reportData.shift_end)}</span>
                 </div>
                 <div className="time-stat duration-badge">
@@ -129,15 +130,15 @@ function EndShiftModal({ reportData, onClose }) {
                 <div className="metric-box">
                   <div className="metric-icon val-revenue"><DollarSign size={20} /></div>
                   <div className="metric-info">
-                    <span className="metric-label">Total Revenue</span>
-                    <span className="metric-value">${reportData.total_revenue.toFixed(2)}</span>
+                    <span className="metric-label">Collected</span>
+                    <span className="metric-value">₹{reportData.total_revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
 
                 <div className="metric-box">
                   <div className="metric-icon val-tables"><ClipboardList size={20} /></div>
                   <div className="metric-info">
-                    <span className="metric-label">Tables Served</span>
+                    <span className="metric-label">Tables served</span>
                     <span className="metric-value">{reportData.total_tables_served}</span>
                   </div>
                 </div>
@@ -145,7 +146,7 @@ function EndShiftModal({ reportData, onClose }) {
                 <div className="metric-box">
                   <div className="metric-icon val-orders"><Utensils size={20} /></div>
                   <div className="metric-info">
-                    <span className="metric-label">Total Orders</span>
+                    <span className="metric-label">Orders</span>
                     <span className="metric-value">{reportData.total_orders}</span>
                   </div>
                 </div>
@@ -153,7 +154,7 @@ function EndShiftModal({ reportData, onClose }) {
                 <div className="metric-box">
                   <div className="metric-icon val-calls"><Bell size={20} /></div>
                   <div className="metric-info">
-                    <span className="metric-label">Waiter Calls</span>
+                    <span className="metric-label">Waiter calls</span>
                     <span className="metric-value">{reportData.total_waiter_calls}</span>
                   </div>
                 </div>
@@ -161,7 +162,7 @@ function EndShiftModal({ reportData, onClose }) {
 
               {reportData.breakdown?.length > 0 && (
                 <div className="shift-breakdown">
-                  <h4>Breakdown by Table</h4>
+                  <h4>Breakdown by table</h4>
                   <table className="shift-breakdown__table">
                     <thead>
                       <tr>
@@ -175,7 +176,7 @@ function EndShiftModal({ reportData, onClose }) {
                         <tr key={b.table}>
                           <td>{b.table}</td>
                           <td>{b.orders}</td>
-                          <td>${b.revenue.toFixed(2)}</td>
+                          <td>₹{b.revenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -194,7 +195,7 @@ function EndShiftModal({ reportData, onClose }) {
               onClick={onClose} 
               id="btn-shift-close"
             >
-              Close Dashboard
+              Back to floor
             </button>
           ) : (
             <>
@@ -215,10 +216,10 @@ function EndShiftModal({ reportData, onClose }) {
                 {loading ? (
                   <>
                     <Loader className="animate-spin" size={16} />
-                    <span>Submitting...</span>
+                    <span>Submitting…</span>
                   </>
                 ) : (
-                  <span>End Shift & Save Report</span>
+                  <span>End shift &amp; submit report</span>
                 )}
               </button>
             </>

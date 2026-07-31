@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid3X3, CheckCircle2, AlertCircle, Clock, UserPlus, AlertTriangle } from 'lucide-react';
-import StatCard from '../components/common/StatCard';
+import { UserPlus, AlertTriangle } from 'lucide-react';
 import FilterTabs from '../components/dashboard/FilterTabs';
 import { TableCard, NewTableCard } from '../components/dashboard/TableCard';
 import WaitlistPreview from '../components/dashboard/WaitlistPreview';
@@ -11,13 +10,45 @@ import TableDetailPanel from '../components/table-management/TableDetailPanel';
 import { useRestaurant } from '../context/useRestaurant';
 import './TableDashboard.css';
 
-function TableDashboard() {
+const ALL = 'All';
+
+const LEGEND = [
+  { key: 'available', label: 'Free', color: 'var(--color-success)' },
+  { key: 'occupied', label: 'Dining', color: 'var(--color-info)' },
+  { key: 'payment', label: 'Bill ready', color: 'var(--color-warning)' },
+  { key: 'sos', label: 'Needs help', color: 'var(--color-danger)' },
+];
+
+function TableDashboard({ search = '' }) {
   const [showModal, setShowModal] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const navigate = useNavigate();
   const [selectedTable, setSelectedTable] = useState(null);
   const [assigningEntry, setAssigningEntry] = useState(null);
-  const { tables, stats, loading, error, assignTable, addToWaitlist } = useRestaurant();
+  const [section, setSection] = useState(ALL);
+
+  const navigate = useNavigate();
+  const { tables, sections, stats, loading, error, assignTable, addToWaitlist } = useRestaurant();
+
+  const sectionOptions = useMemo(() => [ALL, ...(sections || [])], [sections]);
+
+  const legend = useMemo(() => LEGEND.map((l) => ({
+    label: l.label,
+    color: l.color,
+    count: l.key === 'sos'
+      ? tables.filter((t) => t.hasPendingCall).length
+      : tables.filter((t) => t.status === l.key).length,
+  })), [tables]);
+
+  const visibleTables = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return tables.filter((t) => {
+      const inSection = section === ALL || t.section === section;
+      if (!inSection) return false;
+      if (!q) return true;
+      return (t.id || '').toLowerCase().includes(q)
+        || (t.guest || '').toLowerCase().includes(q);
+    });
+  }, [tables, section, search]);
 
   const handleTableClick = (table) => {
     setSelectedTable(table);
@@ -37,6 +68,13 @@ function TableDashboard() {
     setShowDetail(false);
   };
 
+  const openWaitlistModal = () => {
+    setSelectedTable(null);
+    setAssigningEntry(null);
+    setShowModal(true);
+    setShowDetail(false);
+  };
+
   const handleAssign = async (data) => {
     if (selectedTable) {
       const result = await assignTable(selectedTable.dbId, data);
@@ -49,7 +87,7 @@ function TableDashboard() {
     } else if (assigningEntry) {
       const result = await assignTable(data.tableId, {
         ...data,
-        waitlistId: assigningEntry.id
+        waitlistId: assigningEntry.id,
       });
       if (result.success) {
         setShowModal(false);
@@ -68,7 +106,7 @@ function TableDashboard() {
   };
 
   if (loading && tables.length === 0) {
-    return <div className="loading-container">Loading Dashboard...</div>;
+    return <div className="loading-container">Loading floor…</div>;
   }
 
   if (error) {
@@ -76,55 +114,39 @@ function TableDashboard() {
   }
 
   return (
-    <div className={`table-dashboard ${selectedTable && showDetail ? 'table-dashboard--with-panel' : ''}`} id="table-dashboard-page">
-      {/* Stats */}
-      <div className="table-dashboard__stats">
-        <StatCard label="Total Tables" value={stats.totalTables} icon={Grid3X3} variant="total" />
-        <StatCard label="Available" value={stats.available} icon={CheckCircle2} variant="available" />
-        <StatCard label="Occupied" value={stats.occupied} icon={AlertCircle} variant="occupied" />
-        <StatCard label="Waiting" value={stats.waiting} icon={Clock} variant="waiting" />
-      </div>
-
-      {/* All tables full banner */}
+    <div
+      className={`table-dashboard ${selectedTable && showDetail ? 'table-dashboard--with-panel' : ''}`}
+      id="table-dashboard-page"
+    >
       {stats.totalTables > 0 && stats.available === 0 && (
         <div className="table-dashboard__full-banner" id="all-tables-full-banner">
           <AlertTriangle size={16} />
-          <span>All tables are full — new walk-ins should go to the Waiting List.</span>
-          <button
-            onClick={() => {
-              setSelectedTable(null);
-              setAssigningEntry(null);
-              setShowModal(true);
-              setShowDetail(false);
-            }}
-            id="btn-full-banner-waitlist"
-          >
-            Add to Waiting List
+          <span>All tables are full — new walk-ins should go to the waiting list.</span>
+          <button onClick={openWaitlistModal} id="btn-full-banner-waitlist">
+            Add to waiting list
           </button>
         </div>
       )}
 
-      {/* Toolbar */}
       <div className="table-dashboard__toolbar">
-        <FilterTabs />
+        <FilterTabs
+          sections={sectionOptions}
+          active={section}
+          onSectionChange={setSection}
+          legend={legend}
+        />
         <button
           className="table-dashboard__add-btn"
-          onClick={() => {
-            setSelectedTable(null);
-            setAssigningEntry(null);
-            setShowModal(true);
-            setShowDetail(false);
-          }}
+          onClick={openWaitlistModal}
           id="btn-add-to-waitlist"
         >
-          <UserPlus />
-          Add to Waitlist
+          <UserPlus size={16} />
+          Add to waitlist
         </button>
       </div>
 
-      {/* Table Grid */}
       <div className="table-dashboard__grid" id="dashboard-table-grid">
-        {tables.map((table) => (
+        {visibleTables.map((table) => (
           <TableCard
             key={table.dbId}
             table={table}
@@ -137,20 +159,26 @@ function TableDashboard() {
         <NewTableCard onClick={() => {}} />
       </div>
 
-      {/* Lists */}
+      {visibleTables.length === 0 && (
+        <div className="table-dashboard__empty">
+          {search.trim()
+            ? `No table or guest matches “${search.trim()}”.`
+            : 'No tables in this section yet.'}
+        </div>
+      )}
+
       <div className="table-dashboard__lists">
         <WaitlistPreview onAssign={handleAssignFromWaitlist} />
         <PriorityCallsList />
       </div>
 
-      {/* Assign Table Modal */}
       {showModal && (
         <AssignTableModal
           table={selectedTable}
           initialData={assigningEntry ? {
             customerName: assigningEntry.name,
             numberOfPeople: assigningEntry.people.toString(),
-            preference: assigningEntry.preference
+            preference: assigningEntry.preference,
           } : null}
           onClose={() => {
             setShowModal(false);
@@ -161,7 +189,6 @@ function TableDashboard() {
         />
       )}
 
-      {/* Table Detail Panel */}
       {showDetail && selectedTable && (
         <TableDetailPanel
           table={selectedTable}

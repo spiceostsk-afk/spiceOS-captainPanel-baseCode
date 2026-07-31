@@ -1,0 +1,287 @@
+/*
+ * Shared chrome for every captain modal. Each modal file keeps its own
+ * prefixed class names, so they are all listed here rather than renamed —
+ * one place to change the dialog look for the whole panel.
+ */
+
+.modal-overlay,
+.bm-modal-overlay,
+.ci-modal-overlay,
+.tp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 400;
+}
+
+.modal,
+.bm-modal,
+.ci-modal,
+.tp-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 64px);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---- Header ---- */
+.modal__header,
+.bm-modal__header,
+.ci-modal__header,
+.tp-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 20px 20px 14px;
+}
+
+.modal__header-left,
+.bm-modal__header-left,
+.ci-modal__header-left,
+.tp-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.modal__header-icon,
+.bm-modal__header-icon,
+.ci-modal__header-icon,
+.tp-modal__header-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-well);
+  color: var(--color-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal__header-icon svg,
+.bm-modal__header-icon svg,
+.ci-modal__header-icon svg,
+.tp-modal__header-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.modal__header-text h2,
+.bm-modal__header-text h2,
+.ci-modal__header-text h2,
+.tp-modal__header-text h2 {
+  font-size: 20px;
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.modal__header-text span,
+.bm-modal__header-text span,
+.ci-modal__header-text span,
+.tp-modal__header-text span {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.modal__close,
+.bm-modal__close,
+.ci-modal__close,
+.tp-modal__close {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal__close:hover,
+.bm-modal__close:hover,
+.ci-modal__close:hover,
+.tp-modal__close:hover {
+  background: var(--color-canvas);
+  color: var(--color-text-primary);
+}
+
+/* ---- Body ---- */
+.modal__body,
+.bm-modal__body,
+.ci-modal__body,
+.tp-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ---- Footer ---- */
+.modal__footer,
+.bm-modal__footer,
+.ci-modal__footer {
+  display: flex;
+  gap: var(--space-2);
+  padding: 16px 20px 20px;
+}
+
+.modal__btn-cancel,
+.bm-modal__btn-cancel,
+.ci-modal__btn-cancel {
+  flex: 0 0 auto;
+  height: 56px;
+  padding: 0 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+}
+
+.modal__btn-cancel:hover:not(:disabled),
+.bm-modal__btn-cancel:hover:not(:disabled),
+.ci-modal__btn-cancel:hover:not(:disabled) {
+  background: var(--color-canvas);
+}
+
+.modal__btn-submit,
+.bm-modal__btn-submit,
+.ci-modal__btn-submit {
+  flex: 1;
+  height: 56px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 16px;
+  font-weight: var(--font-weight-extrabold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal__btn-submit:hover:not(:disabled),
+.bm-modal__btn-submit:hover:not(:disabled),
+.ci-modal__btn-submit:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.ci-modal__btn-submit--danger {
+  background: var(--color-danger);
+}
+
+.ci-modal__btn-submit--danger:hover:not(:disabled) {
+  filter: brightness(0.94);
+  background: var(--color-danger);
+}
+
+.modal__btn-cancel:disabled,
+.modal__btn-submit:disabled,
+.bm-modal__btn-cancel:disabled,
+.bm-modal__btn-submit:disabled,
+.ci-modal__btn-cancel:disabled,
+.ci-modal__btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Form primitives ---- */
+.modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.modal__field--full { grid-column: 1 / -1; }
+
+.modal__label,
+.bm-modal__label {
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.modal__input,
+.modal__textarea,
+.ci-modal__textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.modal__textarea,
+.ci-modal__textarea {
+  min-height: 88px;
+  resize: vertical;
+  font-weight: var(--font-weight-medium);
+}
+
+.modal__input::placeholder,
+.modal__textarea::placeholder,
+.ci-modal__textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.modal__input:focus,
+.modal__textarea:focus,
+.ci-modal__textarea:focus {
+  border-color: var(--color-border-strong);
+}
+
+.modal__toggle {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.modal__toggle-btn {
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.modal__toggle-btn:hover { background: var(--color-canvas); }
+
+.modal__toggle-btn--active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-text-inverse);
+}

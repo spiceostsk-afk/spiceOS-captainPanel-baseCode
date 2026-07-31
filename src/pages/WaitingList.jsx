@@ -18,10 +18,9 @@ function WaitingList() {
 
   const onModalSubmit = async (data) => {
     if (assigningEntry) {
-      // Assigning from waitlist
-      const result = await assignTable(data.tableId, { 
-        ...data, 
-        waitlistId: assigningEntry.id 
+      const result = await assignTable(data.tableId, {
+        ...data,
+        waitlistId: assigningEntry.id,
       });
       if (result.success) {
         setShowModal(false);
@@ -30,7 +29,6 @@ function WaitingList() {
         alert('Assignment failed: ' + result.error);
       }
     } else {
-      // Just adding to waitlist
       const result = await addToWaitlist(data);
       if (result.success) {
         setShowModal(false);
@@ -41,23 +39,22 @@ function WaitingList() {
   };
 
   if (loading && (!waitingList || waitingList.length === 0)) {
-    return <div className="loading-container">Loading Waiting List...</div>;
+    return <div className="loading-container">Loading waiting list…</div>;
   }
 
   if (error) {
     return <div className="error-container">Error: {error}</div>;
   }
 
+  const count = waitingList?.length || 0;
+
   return (
     <div className="waiting-list-page" id="waiting-list-page">
-      {/* Header */}
       <div className="waiting-list-page__header">
-        <div className="waiting-list-page__title-group">
-          <h1 className="waiting-list-page__title">
-            Waiting List ({waitingList?.length || 0} Customers)
-          </h1>
+        <div>
+          <h1 className="waiting-list-page__title">Waiting list ({count})</h1>
           <p className="waiting-list-page__subtitle">
-            Manage arrivals and assign tables in real-time.
+            Manage arrivals and seat guests in real time.
           </p>
         </div>
         <button
@@ -68,34 +65,31 @@ function WaitingList() {
           }}
           id="btn-add-waitlist"
         >
-          <UserPlus />
-          Add to Waitlist
+          <UserPlus size={17} />
+          Add guest
         </button>
       </div>
 
-      {/* List */}
+      <WaitlistStats />
+
       <div className="waiting-list-page__list" id="waitlist-entries">
-        {waitingList && waitingList.length > 0 ? (
+        {count > 0 ? (
           waitingList.map((entry, index) => (
             <WaitlistEntry key={entry.id} entry={entry} index={index} onAssign={handleAssign} />
           ))
         ) : (
-          <div className="empty-waitlist">No customers currently waiting.</div>
+          <div className="waiting-list-page__empty">No guests waiting right now.</div>
         )}
       </div>
 
-      {/* Stats */}
-      <WaitlistStats />
-
-      {/* Assign Modal */}
       {showModal && (
         <AssignTableModal
-          table={null} // Modal needs to be smarter about selecting a table if one isn't provided
+          table={null}
           initialData={assigningEntry ? {
             customerName: assigningEntry.name,
             numberOfPeople: assigningEntry.people.toString(),
             preference: assigningEntry.preference,
-            specialNote: assigningEntry.notes
+            specialNote: assigningEntry.notes,
           } : null}
           onClose={() => {
             setShowModal(false);

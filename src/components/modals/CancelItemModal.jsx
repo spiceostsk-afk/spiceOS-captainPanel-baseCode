@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
+import './modal-shell.css';
 import './CancelItemModal.css';
 
 const PRESET_REASONS = ['Guest changed mind', 'Kitchen out of stock', 'Order taken in error', 'Duplicate item'];

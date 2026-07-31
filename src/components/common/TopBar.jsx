@@ -1,33 +1,41 @@
 import { useState } from 'react';
-import { Search, RefreshCw, Settings, Bell, Smartphone, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, Search, Bell, MoreHorizontal } from 'lucide-react';
 import { useRestaurant } from '../../context/useRestaurant';
 import { useAuth } from '../../context/AuthContext';
+import { captainInfo } from '../../data/mockData';
 import EndShiftModal from '../modals/EndShiftModal';
 import './TopBar.css';
 
-function TopBar() {
+function TopBar({ onOpenMenu, search, onSearch }) {
   const {
     createWaiterCall,
     refresh,
     setShowCustomerSim,
     generateShiftReport,
     isShiftActive,
-    startShift
+    startShift,
+    waiterCalls,
   } = useRestaurant();
   const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showEndShiftModal, setShowEndShiftModal] = useState(false);
   const [reportData, setReportData] = useState(null);
+
+  const pendingCalls = (waiterCalls || []).length;
 
   const handleSimulateCall = async () => {
     const randomTables = ['01', '02', '03', '05', '12', 'VIP-1'];
     const randomTable = randomTables[Math.floor(Math.random() * randomTables.length)];
     const messages = ['Call Waiter', 'Water Refill Please', 'Bill / Check Requested', 'Extra Cutlery'];
     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    
+
     await createWaiterCall({
       tableNumber: randomTable,
       customerName: 'Aman VIP',
-      message: randomMsg
+      message: randomMsg,
     });
   };
 
@@ -42,87 +50,109 @@ function TopBar() {
     }
   };
 
+  /* Everything that used to be its own top-bar button now lives in one menu,
+     so the bar stays legible on a tablet held one-handed. */
+  const menuItems = [
+    { label: 'Waiting list', onTap: () => navigate('/waiting-list') },
+    { label: 'Shift report', onTap: () => navigate('/reports') },
+    { label: 'Customer Sim', onTap: () => setShowCustomerSim(true), disabled: !isShiftActive },
+    { label: 'Test Call', onTap: handleSimulateCall, disabled: !isShiftActive },
+    { label: 'Sync', onTap: refresh, disabled: !isShiftActive },
+    isShiftActive
+      ? { label: 'End shift', onTap: handleEndShiftClick }
+      : { label: 'Start shift', onTap: startShift },
+    {
+      label: 'Logout',
+      onTap: signOut,
+      muted: true,
+      title: user?.email ? `Sign out (${user.email})` : 'Sign out',
+    },
+  ];
+
+  const run = (item) => {
+    if (item.disabled) return;
+    setMenuOpen(false);
+    item.onTap();
+  };
+
   return (
     <header className="topbar" id="topbar">
-      {/* Search */}
+      <button className="topbar__hamburger" onClick={onOpenMenu} aria-label="Open menu" id="btn-menu">
+        <Menu size={19} />
+      </button>
+
+      <div className="topbar__brand">
+        <span className="topbar__mark">S</span>
+        <span className="topbar__brand-text">
+          <span className="topbar__outlet">Main Outlet</span>
+          <span className="topbar__captain">{captainInfo.name} · {captainInfo.role}</span>
+        </span>
+      </div>
+
       <div className="topbar__search" id="topbar-search">
-        <Search />
-        <input type="text" placeholder="Search table or guest..." />
+        <Search size={15} />
+        <input
+          type="text"
+          placeholder="Search table or guest…"
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+        />
       </div>
 
-      {/* Status */}
-      <div className="topbar__status">
-        <div className="topbar__status-dot" style={{ backgroundColor: isShiftActive ? '#10b981' : '#ef4444', boxShadow: isShiftActive ? '0 0 0 3px rgba(16, 185, 129, 0.15)' : '0 0 0 3px rgba(239, 68, 68, 0.15)' }} />
-        <span>Status: {isShiftActive ? 'Shift Active' : 'Shift Ended'}</span>
-      </div>
-
-
-
-      {/* Actions */}
-      <div className="topbar__actions">
-        <button 
-          className="topbar__btn" 
-          style={{ borderColor: '#10b981', color: '#10b981' }}
-          onClick={() => setShowCustomerSim(true)}
-          title="Open Customer Simulator"
-          id="btn-customer-sim"
-          disabled={!isShiftActive}
-        >
-          <Smartphone size={16} />
-          <span>Customer Sim</span>
-        </button>
-        <button 
-          className="topbar__btn" 
-          style={{ borderColor: '#f59e0b', color: '#f59e0b' }}
-          onClick={handleSimulateCall}
-          title="Simulate Customer Calling Waiter"
-          disabled={!isShiftActive}
-        >
-          <Bell size={16} className={isShiftActive ? 'animate-bounce' : ''} />
-          <span>Test Call</span>
-        </button>
-        <button className="topbar__btn" id="btn-sync" onClick={refresh} title="Sync" disabled={!isShiftActive}>
-          <RefreshCw />
-          <span>Sync</span>
-        </button>
-        
-        {isShiftActive ? (
-          <button 
-            className="topbar__btn topbar__btn--end-shift" 
-            id="btn-end-shift"
-            onClick={handleEndShiftClick}
-            title="End Shift and Generate Report"
-          >
-            End Shift
-          </button>
-        ) : (
-          <button 
-            className="topbar__btn topbar__btn--start-shift" 
-            id="btn-start-shift"
-            onClick={startShift}
-            title="Start New Shift"
-          >
-            Start Shift
-          </button>
-        )}
-        <div className="topbar__avatar" id="topbar-avatar" title="Settings">
-          <Settings size={16} />
+      <div className="topbar__right">
+        <div className="topbar__status">
+          <span
+            className="topbar__status-dot"
+            style={{ background: isShiftActive ? 'var(--color-success)' : 'var(--color-danger)' }}
+          />
+          {isShiftActive ? 'Shift active' : 'Shift ended'}
         </div>
+
         <button
-          className="topbar__btn"
-          onClick={signOut}
-          title={user?.email ? `Sign out (${user.email})` : 'Sign out'}
-          id="btn-logout"
+          className="topbar__icon"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          id="btn-alerts"
         >
-          <LogOut size={16} />
-          <span>Logout</span>
+          <Bell size={18} />
+          {pendingCalls > 0 && <span className="topbar__badge">{pendingCalls}</span>}
         </button>
+
+        <div className="topbar__menu-wrap">
+          <button
+            className="topbar__icon"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="More actions"
+            id="btn-more"
+          >
+            <MoreHorizontal size={19} />
+          </button>
+
+          {menuOpen && (
+            <>
+              <div className="topbar__menu-backdrop" onClick={() => setMenuOpen(false)} />
+              <div className="topbar__menu">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.label}
+                    className={`topbar__menu-item ${item.muted ? 'is-muted' : ''}`}
+                    onClick={() => run(item)}
+                    disabled={item.disabled}
+                    title={item.title}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {showEndShiftModal && reportData && (
-        <EndShiftModal 
-          reportData={reportData} 
-          onClose={() => setShowEndShiftModal(false)} 
+        <EndShiftModal
+          reportData={reportData}
+          onClose={() => setShowEndShiftModal(false)}
         />
       )}
     </header>
@@ -130,4 +160,3 @@ function TopBar() {
 }
 
 export default TopBar;
-

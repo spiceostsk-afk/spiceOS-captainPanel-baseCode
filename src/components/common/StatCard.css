@@ -1,73 +1,57 @@
 .stat-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  gap: var(--space-3);
+  padding: 22px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
-  flex: 1;
-  min-width: 160px;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-xs);
-}
-
-.stat-card:hover {
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
 }
 
 .stat-card__content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 10px;
+  min-width: 0;
 }
 
 .stat-card__label {
-  font-size: var(--font-size-xs);
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .stat-card__value {
-  font-size: var(--font-size-3xl);
+  font-size: 32px;
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
 }
 
 .stat-card__icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-well);
+  color: var(--color-text-soft);
 }
 
 .stat-card__icon svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-.stat-card__icon--total {
-  background: var(--color-primary-subtle);
-  color: var(--color-primary);
-}
-
-.stat-card__icon--available {
-  background: var(--color-available-bg);
-  color: var(--color-available);
-}
-
-.stat-card__icon--occupied {
-  background: var(--color-occupied-bg);
-  color: var(--color-occupied);
-}
-
-.stat-card__icon--waiting {
-  background: var(--color-waiting-bg);
-  color: var(--color-waiting);
-}
+.stat-card__icon--total { background: var(--color-well); color: var(--color-text-soft); }
+.stat-card__icon--available { background: var(--color-success-soft); color: var(--color-success); }
+.stat-card__icon--occupied { background: var(--color-danger-soft); color: var(--color-danger); }
+.stat-card__icon--waiting { background: var(--color-warning-soft); color: var(--color-warning); }
+.stat-card__icon--dining { background: var(--color-info-soft); color: var(--color-info); }

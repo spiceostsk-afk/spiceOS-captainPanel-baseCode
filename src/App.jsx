@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/common/Sidebar';
 import TopBar from './components/common/TopBar';
+import NavPill from './components/common/NavPill';
 import TableDashboard from './pages/TableDashboard';
 import TableManagement from './pages/TableManagement';
 import WaitingList from './pages/WaitingList';
@@ -18,21 +20,34 @@ import Login from './components/common/Login';
 import NoTenant from './components/common/NoTenant';
 import './App.css';
 
+/** The pill only shows on the screens it navigates between. */
+const PILL_ROUTES = ['/', '/waiting-list', '/notifications'];
+
 function MainAppLayout() {
   const { showCustomerSim, setShowCustomerSim, isShiftActive } = useRestaurant();
   const location = useLocation();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
   const isLocked = !isShiftActive && location.pathname !== '/reports';
+  const showPill = PILL_ROUTES.includes(location.pathname) && !isLocked;
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
+
       <main className="app-main">
-        <TopBar />
-        <div className="app-content" style={{ position: 'relative' }}>
+        <TopBar
+          onOpenMenu={() => setMenuOpen(true)}
+          search={search}
+          onSearch={setSearch}
+        />
+
+        <div className="app-content">
           {isLocked && <ShiftLockOverlay />}
           <Routes>
-            <Route path="/" element={<TableDashboard />} />
+            <Route path="/" element={<TableDashboard search={search} />} />
             <Route path="/table-management" element={<TableManagement />} />
             <Route path="/waiting-list" element={<WaitingList />} />
             <Route path="/menu" element={<MenuCatalog />} />
@@ -42,6 +57,9 @@ function MainAppLayout() {
           </Routes>
         </div>
       </main>
+
+      {showPill && <NavPill />}
+
       <NotificationToast />
       {showCustomerSim && isShiftActive && <CustomerSimulator onClose={() => setShowCustomerSim(false)} />}
     </div>
@@ -87,4 +105,3 @@ function App() {
 }
 
 export default App;
-

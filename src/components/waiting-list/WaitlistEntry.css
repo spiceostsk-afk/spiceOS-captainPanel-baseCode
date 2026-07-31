@@ -2,56 +2,47 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  padding: 14px 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
-  transition: all var(--transition-base);
   box-shadow: var(--shadow-card);
 }
 
-.waitlist-entry:hover {
-  box-shadow: var(--shadow-sm);
-}
-
 .waitlist-entry--next {
-  border: 2px solid var(--color-primary);
-  box-shadow: var(--shadow-md);
-  background: rgba(139, 94, 60, 0.02);
+  border-color: var(--color-ink);
 }
 
-/* ---- Position Badge ---- */
+/* ---- Position ---- */
 .waitlist-entry__position {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 52px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  gap: 1px;
+  padding: 8px 0;
+  border-radius: var(--radius-md);
+  background: var(--color-well);
+  color: var(--color-text-soft);
 }
 
-.waitlist-entry__position--next {
-  background: var(--color-primary);
+.waitlist-entry__position.is-next {
+  background: var(--color-ink);
   color: var(--color-text-inverse);
 }
 
-.waitlist-entry__position--default {
-  background: var(--color-bg-input);
-  color: var(--color-text-secondary);
-}
-
 .waitlist-entry__position-label {
-  font-size: 8px;
+  font-size: 10px;
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
 }
 
 .waitlist-entry__position-number {
-  font-size: var(--font-size-xl);
+  font-size: 18px;
   font-weight: var(--font-weight-extrabold);
   line-height: 1;
 }
@@ -59,80 +50,71 @@
 /* ---- Content ---- */
 .waitlist-entry__content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 4px;
 }
 
 .waitlist-entry__name-row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .waitlist-entry__name {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
+  font-size: 17px;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-text-primary);
 }
 
 .waitlist-entry__next-badge {
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  font-size: 9px;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--color-info-soft);
+  color: var(--color-info);
+  font-size: 11px;
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .waitlist-entry__meta {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  gap: var(--space-4);
   flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 .waitlist-entry__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.waitlist-entry__wait {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+}
+
+.waitlist-entry__wait.is-warning { color: var(--color-warning); }
+.waitlist-entry__wait.is-critical { color: var(--color-danger); }
+
+.waitlist-entry__hint {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
 }
 
-.waitlist-entry__meta-item svg {
-  width: 13px;
-  height: 13px;
-}
-
-.waitlist-entry__meta-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: var(--radius-full);
-  background: var(--color-text-tertiary);
-}
-
-.waitlist-entry__wait--urgent {
-  color: var(--color-occupied);
-  font-weight: var(--font-weight-semibold);
-}
-
-/* ---- Suggestion ---- */
-.waitlist-entry__suggestion {
-  font-size: var(--font-size-sm);
-  color: var(--color-primary);
-  padding-top: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.waitlist-entry__suggestion svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
+.waitlist-entry__hint b {
+  color: var(--color-text-soft);
+  font-weight: var(--font-weight-bold);
 }
 
 /* ---- Actions ---- */
@@ -144,85 +126,43 @@
 }
 
 .waitlist-entry__assign-btn {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  transition: all var(--transition-fast);
-}
-
-.waitlist-entry__assign-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-.waitlist-entry__assign-btn--primary {
-  background: var(--color-primary);
+  gap: 6px;
+  height: 48px;
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-success);
   color: var(--color-text-inverse);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
 }
 
-.waitlist-entry__assign-btn--primary:hover {
-  background: var(--color-primary-hover);
-}
-
-.waitlist-entry__assign-btn--outline {
-  background: var(--color-bg-card);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-}
-
-.waitlist-entry__assign-btn--outline:hover {
-  background: var(--color-bg-hover);
-  border-color: var(--color-primary-light);
+.waitlist-entry__assign-btn:hover {
+  filter: brightness(0.94);
 }
 
 .waitlist-entry__icon-btn {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-tertiary);
-  transition: all var(--transition-fast);
 }
 
 .waitlist-entry__icon-btn:hover {
-  background: var(--color-bg-hover);
+  background: var(--color-canvas);
   color: var(--color-text-primary);
 }
 
-.waitlist-entry__icon-btn svg {
-  width: 16px;
-  height: 16px;
+@media (max-width: 720px) {
+  .waitlist-entry { flex-wrap: wrap; }
+  .waitlist-entry__actions { width: 100%; }
+  .waitlist-entry__assign-btn { flex: 1; justify-content: center; }
 }
-
-/* ---- Notes/Remarks ---- */
-.waitlist-entry__notes {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  padding-top: var(--space-1);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.waitlist-entry__notes svg {
-  width: 13px;
-  height: 13px;
-  color: var(--color-primary-light);
-  flex-shrink: 0;
-}
-
-.waitlist-entry__notes-label {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-}
-
-.waitlist-entry__notes-content {
-  font-style: italic;
-}
-

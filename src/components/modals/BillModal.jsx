@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Receipt, Percent, DollarSign } from 'lucide-react';
+import './modal-shell.css';
 import './BillModal.css';
 
 function BillModal({ table, mergedTables = [], onClose, onConfirm }) {
@@ -63,7 +64,7 @@ function BillModal({ table, mergedTables = [], onClose, onConfirm }) {
                   g.items.map((item, idx) => (
                     <div key={idx} className="bill-line">
                       <span className="bill-line__name">{item.qty}x {item.name}</span>
-                      <span className="bill-line__price">${(item.qty * item.price).toFixed(2)}</span>
+                      <span className="bill-line__price">₹{(item.qty * item.price).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                     </div>
                   ))
                 )}
@@ -105,21 +106,21 @@ function BillModal({ table, mergedTables = [], onClose, onConfirm }) {
           <div className="bill-summary">
             <div className="bill-summary__row">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>₹{subtotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
             </div>
             <div className="bill-summary__row">
               <span>GST / Tax (10%)</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>₹{tax.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
             </div>
             {discountAmount > 0 && (
               <div className="bill-summary__row bill-summary__row--discount">
                 <span>Discount</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>−₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
               </div>
             )}
             <div className="bill-summary__total">
               <span>Total Due</span>
-              <span>${total.toFixed(2)}</span>
+              <span>₹{total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
             </div>
           </div>
         </div>

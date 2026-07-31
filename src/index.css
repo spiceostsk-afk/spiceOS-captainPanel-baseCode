@@ -1,42 +1,68 @@
 /* ============================================
    CAPTAIN PANEL — Global Design Tokens & Reset
+   Shares the Spice OS design system with the manager dashboard.
    ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root {
-  /* —— Brand Colors —— */
+  /* —— Brand (tenant-overridable via BrandingContext) —— */
   --color-primary: #D62828;
-  --color-primary-dark: #B71C1C;
+  --color-primary-dark: #B91F1F;
   --color-primary-light: #E23744;
-  --color-primary-hover: #C62828;
+  --color-primary-hover: #B91F1F;
   --color-primary-subtle: rgba(214, 40, 40, 0.08);
 
-  /* —— Status Colors —— */
-  --color-occupied: #D94B4B;
-  --color-occupied-bg: rgba(217, 75, 75, 0.08);
-  --color-available: #2E9E5A;
-  --color-available-bg: rgba(46, 158, 90, 0.08);
-  --color-reserved: #C47A20;
-  --color-reserved-bg: rgba(196, 122, 32, 0.08);
-  --color-cleaning: #7C8A97;
-  --color-cleaning-bg: rgba(124, 138, 151, 0.08);
-  --color-payment: #D94B4B;
-  --color-payment-bg: rgba(217, 75, 75, 0.06);
-  --color-holding: #C47A20;
-  --color-waiting: #E8A83E;
-  --color-waiting-bg: rgba(232, 168, 62, 0.08);
+  /* —— Semantic status (reserved by the system) ——
+     Green = free, blue = dining, amber = bill ready, red = needs help. */
+  --color-success: #15A34A;
+  --color-success-soft: #E7F6ED;
+  --color-info: #2563EB;
+  --color-info-soft: #EAF1FE;
+  --color-warning: #E8890C;
+  --color-warning-soft: #FDF3E4;
+  --color-danger: #DC2626;
+  --color-danger-soft: #FCE8E8;
+  --color-danger-border: #F3D4D4;
 
-  /* —— Neutrals —— */
-  --color-bg: #FFFFFF;
+  /* Legacy status aliases mapped onto the semantic ramp */
+  --color-available: var(--color-success);
+  --color-available-bg: var(--color-success-soft);
+  --color-occupied: var(--color-info);
+  --color-occupied-bg: var(--color-info-soft);
+  --color-reserved: var(--color-warning);
+  --color-reserved-bg: var(--color-warning-soft);
+  --color-payment: var(--color-warning);
+  --color-payment-bg: var(--color-warning-soft);
+  --color-holding: var(--color-warning);
+  --color-waiting: var(--color-warning);
+  --color-waiting-bg: var(--color-warning-soft);
+  --color-cleaning: #71767F;
+  --color-cleaning-bg: #F0F1F4;
+
+  /* —— Surfaces —— */
+  --color-canvas: #F6F7F9;
+  --color-surface: #FFFFFF;
+  --color-well: #F0F1F4;
+
+  --color-bg: #F6F7F9;
   --color-bg-card: #FFFFFF;
   --color-bg-sidebar: #FFFFFF;
-  --color-bg-input: #FFF5F5;
-  --color-bg-hover: #FDECEC;
-  --color-bg-modal-overlay: rgba(40, 10, 10, 0.45);
-  --color-border: #F0DADA;
-  --color-border-light: #F7E7E7;
-  --color-text-primary: #1F2328;
-  --color-text-secondary: #7A7A7A;
-  --color-text-tertiary: #A8A8A8;
+  --color-bg-input: #F6F7F9;
+  --color-bg-hover: #F0F1F4;
+  --color-bg-modal-overlay: rgba(22, 24, 29, 0.42);
+
+  /* —— Lines —— */
+  --color-border: #E6E8EC;
+  --color-border-light: #F0F1F4;
+  --color-border-strong: #C9CDD5;
+
+  /* —— Ink —— */
+  --color-ink: #16181D;
+  --color-text-primary: #16181D;
+  --color-text-soft: #4B4F58;
+  --color-text-secondary: #71767F;
+  --color-text-tertiary: #A0A4AC;
   --color-text-inverse: #FFFFFF;
 
   /* —— Typography —— */
@@ -62,30 +88,30 @@
   --line-height-relaxed: 1.6;
 
   /* —— Spacing —— */
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
 
   /* —— Radius —— */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 9px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 999px;
 
   /* —— Shadows —— */
-  --shadow-xs: 0 1px 2px rgba(45, 32, 24, 0.04);
-  --shadow-sm: 0 1px 4px rgba(45, 32, 24, 0.06);
-  --shadow-md: 0 4px 12px rgba(45, 32, 24, 0.08);
-  --shadow-lg: 0 8px 24px rgba(45, 32, 24, 0.10);
-  --shadow-xl: 0 16px 48px rgba(45, 32, 24, 0.14);
-  --shadow-card: 0 1px 4px rgba(45, 32, 24, 0.05), 0 0 0 1px rgba(45, 32, 24, 0.03);
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 10px 28px rgba(16, 24, 40, 0.14);
+  --shadow-xl: 0 24px 60px rgba(16, 24, 40, 0.28);
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04);
 
   /* —— Transitions —— */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -93,8 +119,8 @@
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* —— Layout —— */
-  --sidebar-width: 200px;
-  --topbar-height: 56px;
+  --sidebar-width: 248px;
+  --topbar-height: 60px;
 }
 
 /* ============ RESET ============ */
@@ -114,7 +140,7 @@ html {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--color-bg);
+  background-color: var(--color-canvas);
   color: var(--color-text-primary);
   line-height: var(--line-height-normal);
   min-height: 100vh;
@@ -156,10 +182,20 @@ img {
   max-width: 100%;
 }
 
+/* Numeric columns line up when digits are tabular */
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* SOS attention ring — used by table cards and the alert queue */
+@keyframes sosPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35); }
+  70%  { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
 /* ============ SCROLLBAR ============ */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -172,5 +208,5 @@ img {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: var(--color-border-strong);
 }
