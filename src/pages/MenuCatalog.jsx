@@ -82,10 +82,11 @@ const MenuCatalog = () => {
         .order('category_name');
       if (catsError) throw catsError;
 
+      // Fetch everything, including 86'd dishes — a captain needs to see what's
+      // off so they can tell the guest, rather than the item silently vanishing.
       const { data: itemsData, error: itemsError } = await supabase
         .from('menu_items')
-        .select('*')
-        .eq('is_available', true);
+        .select('*');
       if (itemsError) throw itemsError;
 
       setCategories(catsData);
@@ -207,6 +208,8 @@ const MenuCatalog = () => {
   const q = dishSearch.trim().toLowerCase();
   const filteredItems = menuItems.filter((item) => {
     if (item.category_id !== activeCategory) return false;
+    if (activeFilter === 'Available' && item.is_available === false) return false;
+    if (activeFilter === 'Off menu' && item.is_available !== false) return false;
     if (!q) return true;
     return (item.item_name || '').toLowerCase().includes(q);
   });
@@ -259,7 +262,7 @@ const MenuCatalog = () => {
 
           <div className="take-order__filters">
             <div className="take-order__segmented">
-              {['All', 'Vegetarian', 'Spicy'].map((filter) => (
+              {['All', 'Available', 'Off menu'].map((filter) => (
                 <button
                   key={filter}
                   className={activeFilter === filter ? 'is-active' : ''}
@@ -283,20 +286,27 @@ const MenuCatalog = () => {
           <div className="take-order__grid" id="menu-items-grid">
             {filteredItems.map((item) => {
               const qty = qtyOf(item.id);
+              const off = item.is_available === false;
               return (
                 <div
                   key={item.id}
-                  className={`dish ${qty > 0 ? 'dish--in-cart' : ''}`}
+                  className={`dish ${qty > 0 ? 'dish--in-cart' : ''} ${off ? 'dish--off' : ''}`}
                   id={`food-card-${item.id}`}
-                  onClick={() => addToOrder(item)}
+                  onClick={() => !off && addToOrder(item)}
+                  title={off ? 'This dish is off the menu right now' : undefined}
                 >
-                  <div className="dish__name">{item.item_name}</div>
+                  <div className="dish__name">
+                    {item.item_name}
+                    {off && <span className="dish__off-pill">Off menu</span>}
+                  </div>
                   {item.description && <div className="dish__desc">{item.description}</div>}
 
                   <div className="dish__foot">
                     <span className="dish__price tnum">{inr(item.price)}</span>
 
-                    {qty > 0 ? (
+                    {off ? (
+                      <span className="dish__off-note">Unavailable</span>
+                    ) : qty > 0 ? (
                       <div className="dish__stepper" onClick={(e) => e.stopPropagation()}>
                         <button onClick={() => updateQty(item.id, -1)} id={`btn-dec-dish-${item.id}`}>
                           <Minus size={13} />

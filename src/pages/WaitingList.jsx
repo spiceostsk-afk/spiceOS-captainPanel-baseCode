@@ -9,11 +9,22 @@ import './WaitingList.css';
 function WaitingList() {
   const [showModal, setShowModal] = useState(false);
   const [assigningEntry, setAssigningEntry] = useState(null);
-  const { waitingList, loading, error, assignTable, addToWaitlist } = useRestaurant();
+  const {
+    waitingList, loading, error, assignTable, addToWaitlist,
+    removeFromWaitlist, pinWaitlistEntry,
+  } = useRestaurant();
 
   const handleAssign = (entry) => {
     setAssigningEntry(entry);
     setShowModal(true);
+  };
+
+  const handleRemove = async (entry) => {
+    if (!window.confirm(`Remove ${entry.name} from the waiting list?`)) return;
+    const result = await removeFromWaitlist(entry.id);
+    if (!result.success) {
+      alert('Could not remove guest: ' + result.error);
+    }
   };
 
   const onModalSubmit = async (data) => {
@@ -75,7 +86,14 @@ function WaitingList() {
       <div className="waiting-list-page__list" id="waitlist-entries">
         {count > 0 ? (
           waitingList.map((entry, index) => (
-            <WaitlistEntry key={entry.id} entry={entry} index={index} onAssign={handleAssign} />
+            <WaitlistEntry
+              key={entry.id}
+              entry={entry}
+              index={index}
+              onAssign={handleAssign}
+              onPin={(e) => pinWaitlistEntry(e.id)}
+              onRemove={handleRemove}
+            />
           ))
         ) : (
           <div className="waiting-list-page__empty">No guests waiting right now.</div>

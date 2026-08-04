@@ -50,8 +50,8 @@ function TopBar({ onOpenMenu, search, onSearch }) {
     }
   };
 
-  /* Everything that used to be its own top-bar button now lives in one menu,
-     so the bar stays legible on a tablet held one-handed. */
+  /* Destinations live in the drawer; this menu carries the shift actions that
+     used to each own a top-bar button. */
   const menuItems = [
     { label: 'Waiting list', onTap: () => navigate('/waiting-list') },
     { label: 'Shift report', onTap: () => navigate('/reports') },

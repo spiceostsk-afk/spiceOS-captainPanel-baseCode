@@ -441,3 +441,31 @@
 
 .cart__send:hover:not(:disabled) { background: var(--color-primary-hover); }
 .cart__send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- Off-menu dishes ---- */
+.dish--off {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dish--off:hover { border-color: var(--color-border); }
+.dish--off:active { transform: none; }
+
+.dish__off-pill {
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 10px;
+  font-weight: var(--font-weight-extrabold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.dish__off-note {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-tertiary);
+}

@@ -166,3 +166,20 @@
   .waitlist-entry__actions { width: 100%; }
   .waitlist-entry__assign-btn { flex: 1; justify-content: center; }
 }
+
+.waitlist-entry__icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.waitlist-entry__icon-btn.is-on {
+  background: var(--color-info-soft);
+  border-color: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+.waitlist-entry__icon-btn.is-danger:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-soft);
+}

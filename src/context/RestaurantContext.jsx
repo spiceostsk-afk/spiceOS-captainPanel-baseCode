@@ -905,6 +905,118 @@ export function RestaurantProvider({ children }) {
     }
   };
 
+  /**
+   * Add a table to the floor. `section` is the section *name* the captain
+   * picked; we resolve it to an id so the new table lands in the right area.
+   */
+  const createTable = async ({ tableNumber, capacity, section }) => {
+    const number = parseInt(tableNumber, 10);
+    const seats = parseInt(capacity, 10) || 2;
+    if (!number || Number.isNaN(number)) {
+      return { success: false, error: 'A table number is required.' };
+    }
+    if (tables.some((t) => t.id === `T-${String(number).padStart(2, '0')}`)) {
+      return { success: false, error: `Table ${number} already exists.` };
+    }
+
+    if (isMockMode) {
+      try {
+        const data = loadMockData();
+        data.tables.push({
+          id: `T-${String(number).padStart(2, '0')}`,
+          dbId: 'tbl-' + Date.now(),
+          status: 'available',
+          guest: null,
+          phone: null,
+          time: '--',
+          capacity: seats,
+          seated: 0,
+          section: section || 'General',
+          server: null,
+          sessionId: null,
+          mergedInto: null,
+          billDiscount: null,
+          kots: [],
+          orders: [],
+        });
+        localStorage.setItem('mock_tables', JSON.stringify(data.tables));
+        fetchData();
+        return { success: true };
+      } catch (err) {
+        console.error('Error creating table in mock mode:', err);
+        return { success: false, error: err.message };
+      }
+    }
+
+    try {
+      let sectionId = null;
+      if (section) {
+        const { data: sec } = await supabase
+          .from('restaurant_sections')
+          .select('id')
+          .eq('section_name', section)
+          .maybeSingle();
+        sectionId = sec?.id || null;
+      }
+
+      const payload = { table_number: number, capacity: seats, status: 'available' };
+      if (sectionId) payload.section_id = sectionId;
+
+      const { error } = await supabase.from('restaurant_tables').insert([payload]);
+      if (error) throw error;
+      await fetchData();
+      return { success: true };
+    } catch (err) {
+      console.error('Error creating table:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  /** Drop a party from the queue — they left, or were seated elsewhere. */
+  const removeFromWaitlist = async (waitlistId) => {
+    if (isMockMode) {
+      try {
+        const data = loadMockData();
+        const next = data.waitlist.filter((w) => w.id !== waitlistId);
+        localStorage.setItem('mock_waitlist', JSON.stringify(next));
+        fetchData();
+        return { success: true };
+      } catch (err) {
+        console.error('Error removing from waitlist in mock mode:', err);
+        return { success: false, error: err.message };
+      }
+    }
+
+    try {
+      const { error } = await supabase
+        .from('waiting_list')
+        .update({ queue_status: 'cancelled' })
+        .eq('id', waitlistId);
+      if (error) throw error;
+      await fetchData();
+      return { success: true };
+    } catch (err) {
+      console.error('Error removing from waitlist:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  /**
+   * Bump a party to the front of the queue. There is no priority column, so
+   * this reorders locally for the current session rather than pretending to
+   * persist something the schema cannot hold.
+   */
+  const pinWaitlistEntry = (waitlistId) => {
+    setWaitingList((prev) => {
+      const idx = prev.findIndex((w) => w.id === waitlistId);
+      if (idx <= 0) return prev;
+      const next = [...prev];
+      const [entry] = next.splice(idx, 1);
+      next.unshift(entry);
+      return next.map((w, i) => ({ ...w, isNext: i === 0 }));
+    });
+  };
+
   const createWaiterCall = async (callData) => {
     if (isMockMode) {
       try {
@@ -1484,6 +1596,9 @@ export function RestaurantProvider({ children }) {
       assignTable,
       assignWaiter,
       addToWaitlist,
+      removeFromWaitlist,
+      pinWaitlistEntry,
+      createTable,
       createWaiterCall,
       freeTable,
       markBilling,

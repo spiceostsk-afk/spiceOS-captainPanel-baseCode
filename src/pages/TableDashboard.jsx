@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { UserPlus, AlertTriangle } from 'lucide-react';
 import FilterTabs from '../components/dashboard/FilterTabs';
 import { TableCard, NewTableCard } from '../components/dashboard/TableCard';
-import WaitlistPreview from '../components/dashboard/WaitlistPreview';
-import PriorityCallsList from '../components/dashboard/PriorityCallsList';
 import AssignTableModal from '../components/modals/AssignTableModal';
+import NewTableModal from '../components/modals/NewTableModal';
 import TableDetailPanel from '../components/table-management/TableDetailPanel';
 import { useRestaurant } from '../context/useRestaurant';
 import './TableDashboard.css';
@@ -25,6 +24,7 @@ function TableDashboard({ search = '' }) {
   const [selectedTable, setSelectedTable] = useState(null);
   const [assigningEntry, setAssigningEntry] = useState(null);
   const [section, setSection] = useState(ALL);
+  const [showNewTable, setShowNewTable] = useState(false);
 
   const navigate = useNavigate();
   const { tables, sections, stats, loading, error, assignTable, addToWaitlist } = useRestaurant();
@@ -59,13 +59,6 @@ function TableDashboard({ search = '' }) {
       setShowDetail(true);
       setShowModal(false);
     }
-  };
-
-  const handleAssignFromWaitlist = (entry) => {
-    setAssigningEntry(entry);
-    setSelectedTable(null);
-    setShowModal(true);
-    setShowDetail(false);
   };
 
   const openWaitlistModal = () => {
@@ -156,7 +149,7 @@ function TableDashboard({ search = '' }) {
             }}
           />
         ))}
-        <NewTableCard onClick={() => {}} />
+        <NewTableCard onClick={() => setShowNewTable(true)} />
       </div>
 
       {visibleTables.length === 0 && (
@@ -166,11 +159,6 @@ function TableDashboard({ search = '' }) {
             : 'No tables in this section yet.'}
         </div>
       )}
-
-      <div className="table-dashboard__lists">
-        <WaitlistPreview onAssign={handleAssignFromWaitlist} />
-        <PriorityCallsList />
-      </div>
 
       {showModal && (
         <AssignTableModal
@@ -188,6 +176,8 @@ function TableDashboard({ search = '' }) {
           onAssign={handleAssign}
         />
       )}
+
+      {showNewTable && <NewTableModal onClose={() => setShowNewTable(false)} />}
 
       {showDetail && selectedTable && (
         <TableDetailPanel

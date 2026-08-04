@@ -94,20 +94,6 @@
   }
 }
 
-/* ---- Bottom Lists Grid ---- */
-.table-dashboard__lists {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
-  align-items: start;
-}
-
-@media (min-width: 1024px) {
-  .table-dashboard__lists {
-    grid-template-columns: 1.2fr 1fr;
-  }
-}
-
 /* ---- Shared page states ---- */
 .loading-container,
 .error-container {

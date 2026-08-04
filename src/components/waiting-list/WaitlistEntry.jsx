@@ -22,7 +22,7 @@ function waitTone(time) {
   return '';
 }
 
-function WaitlistEntry({ entry, index, onAssign }) {
+function WaitlistEntry({ entry, index, onAssign, onPin, onRemove }) {
   const isNext = entry.isNext;
   const position = index !== undefined ? index + 1 : 1;
 
@@ -82,10 +82,21 @@ function WaitlistEntry({ entry, index, onAssign }) {
           <Armchair size={15} />
           Seat now
         </button>
-        <button className="waitlist-entry__icon-btn" title="Pin">
+        <button
+          className={`waitlist-entry__icon-btn ${isNext ? 'is-on' : ''}`}
+          title={isNext ? 'Already next up' : 'Move to front of queue'}
+          onClick={() => onPin && onPin(entry)}
+          disabled={isNext}
+          id={`btn-pin-${entry.id}`}
+        >
           <Pin size={15} />
         </button>
-        <button className="waitlist-entry__icon-btn" title="Remove">
+        <button
+          className="waitlist-entry__icon-btn is-danger"
+          title="Remove from waitlist"
+          onClick={() => onRemove && onRemove(entry)}
+          id={`btn-remove-${entry.id}`}
+        >
           <X size={15} />
         </button>
       </div>
