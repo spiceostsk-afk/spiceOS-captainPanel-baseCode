@@ -601,7 +601,9 @@ export function RestaurantProvider({ children }) {
 
       setTables(mappedTables);
       setWaitingList(mapWaitingList(waitlistData));
-      setSections(sectionsData);
+      // Sections are consumed as plain names (filter pills, table.section,
+      // createTable's section_name lookup), so flatten the rows here.
+      setSections((sectionsData || []).map((s) => s.section_name).filter(Boolean));
       setWaiterCalls(mappedCalls);
       setError(null);
     } catch (err) {

@@ -114,8 +114,8 @@ function AssignTableModal({ table, onClose, onAssign, initialData }) {
                 >
                   <option value="No Preference">No Preference</option>
                   {sections.map((sec) => (
-                    <option key={sec.id} value={sec.section_name}>
-                      {sec.section_name}
+                    <option key={sec} value={sec}>
+                      {sec}
                     </option>
                   ))}
                 </select>
