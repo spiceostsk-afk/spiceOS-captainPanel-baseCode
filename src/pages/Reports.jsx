@@ -3,6 +3,7 @@ import { useRestaurant } from '../context/useRestaurant';
 import { Calendar, DollarSign, ClipboardList, Utensils, Bell, FileText, RefreshCw, Clock, Download } from 'lucide-react';
 import StatCard from '../components/common/StatCard';
 import './Reports.css';
+import { fmtDate } from '../lib/dates';
 
 function Reports() {
   const { shiftReports, fetchShiftReports, loading } = useRestaurant();
@@ -59,11 +60,7 @@ function Reports() {
     return `${hrs}h ${mins}m`;
   };
 
-  const formatDate = (isoString) => {
-    if (!isoString) return '--';
-    const date = new Date(isoString);
-    return date.toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' });
-  };
+  const formatDate = (isoString) => fmtDate(isoString);
 
   const formatTime = (isoString) => {
     if (!isoString) return '--';

@@ -1353,6 +1353,24 @@ export function RestaurantProvider({ children }) {
         .select('*, menu_items ( item_name )')
         .single();
       if (error) throw error;
+
+      // A Void KOT is never sold, so the order's total drops it. Reports add up
+      // order totals; left alone, a voided dish would be earned once the table
+      // settles. Its stock stays used: the kitchen cooked it.
+      const { data: live, error: liveError } = await supabase
+        .from('order_items')
+        .select('item_price, quantity')
+        .eq('order_id', updated.order_id)
+        .eq('is_cancelled', false);
+      if (liveError) throw liveError;
+      const subtotal = (live || []).reduce((acc, l) => acc + Number(l.item_price) * Number(l.quantity), 0);
+      const tax = subtotal * 0.1;
+      const { error: totalError } = await supabase
+        .from('orders')
+        .update({ subtotal, tax, total: subtotal + tax })
+        .eq('id', updated.order_id);
+      if (totalError) throw totalError;
+
       await fetchData();
       return {
         success: true,

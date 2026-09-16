@@ -1,3 +1,5 @@
+import { fmtDate } from './dates';
+
 /**
  * printKOT — Kitchen Order Ticket auto-print utility
  *
@@ -17,7 +19,7 @@
 export function printKOT(params) {
   const { tableId, sessionId, items = [], guestName, section, kotNumber, orderNote = '' } = params;
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const dateStr = fmtDate(now);
   const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
   const kotRef = kotNumber
@@ -240,7 +242,7 @@ export function printKOT(params) {
 export function printCancellationKOT(params) {
   const { tableId, guestName, kotNumber, item, reason } = params;
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const dateStr = fmtDate(now);
   const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
   const html = `<!DOCTYPE html>
